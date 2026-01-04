@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "miseventos"
+version = "0.1.0"
+description = ""
+authors = ["daniel <ruizdani301@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.128.0"
+sqlalchemy = "^2.0.45"
+sqlmodel = "^0.0.31"
+uvicorn = "^0.40.0"
+python-dotenv = "^1.2.1"
+pydantic-settings = "^2.12.0"
+
+[tool.poetry.group.dev.dependencies]
+alembic = "^1.12.1"
+pytest = "^7.4.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry-core"
