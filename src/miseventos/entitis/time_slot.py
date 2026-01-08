@@ -4,6 +4,7 @@ from uuid import UUID
 from typing import Optional
 from uuid import UUID
 
+
 @dataclass
 class TimeSlotEntity:
     id: Optional[str] = None
@@ -16,4 +17,4 @@ class TimeSlotEntity:
     def validate_time_slot(self) -> bool:
         if self.start_time and self.end_time:
             return self.start_time < self.end_time
-        return False 
+        return False

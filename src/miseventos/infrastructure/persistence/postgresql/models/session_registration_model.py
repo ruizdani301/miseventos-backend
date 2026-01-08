@@ -15,25 +15,13 @@ class SessionRegistration(SQLModel, table=True):
         UniqueConstraint("user_id", "session_id", name="uq_user_session"),
     )
 
-    id: UUID = Field(
-        default_factory=uuid4,
-        primary_key=True,
-        index=True
-    )
+    id: UUID = Field(default_factory=uuid4, primary_key=True, index=True)
 
-    user_id: UUID = Field(
-        foreign_key="users.id",
-        index=True
-    )
+    user_id: UUID = Field(foreign_key="users.id", index=True)
 
-    session_id: UUID = Field(
-        foreign_key="sessions.id",
-        index=True
-    )
+    session_id: UUID = Field(foreign_key="sessions.id", index=True)
 
-    registered_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc)
-    )
+    registered_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-    user: Optional[User] = Relationship(back_populates="session_registrations")
+    user: Optional[User] = Relationship(back_populates="session_registration")
     session: Optional[Session] = Relationship(back_populates="registrations")

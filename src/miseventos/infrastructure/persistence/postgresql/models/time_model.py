@@ -11,27 +11,18 @@ from .session_model import Session
 class TimeSlot(SQLModel, table=True):
     __tablename__ = "time_slots"
 
-    id: UUID = Field(
-        default_factory=uuid4,
-        primary_key=True,
-        index=True
-    )
+    id: UUID = Field(default_factory=uuid4, primary_key=True, index=True)
 
-    event_id: UUID = Field(
-        foreign_key="events.id",
-        index=True
-    )
+    event_id: UUID = Field(foreign_key="events.id", index=True)
 
     start_time: datetime
     end_time: datetime
 
     is_assigned: bool = Field(default=False)
 
-    created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc)
-    )
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-    event: Optional[Event] = Relationship(back_populates="time_slots")
+    event: Optional[Event] = Relationship(back_populates="time_slot")
 
     # Relación 1–1: un slot puede tener solo una sesión
     session: Optional["Session"] = Relationship(back_populates="time_slot")

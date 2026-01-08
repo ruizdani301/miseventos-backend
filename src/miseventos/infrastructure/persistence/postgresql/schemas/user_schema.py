@@ -6,9 +6,9 @@ from miseventos.infrastructure.persistence.postgresql.models.enum import RoleNam
 
 
 class UserRequest(SQLModel):
-   email: str
-   password: str
-   role: Optional[str] = RoleName.ASSISTANT.value
+    email: str
+    password: str
+    role: Optional[str] = RoleName.ASSISTANT.value
 
 
 class UserResponse(SQLModel):
@@ -16,8 +16,10 @@ class UserResponse(SQLModel):
     success: bool
     error_message: Optional[str] = None
 
+
 class UserEmailRequest(SQLModel):
     email: str
+
 
 class UserEmailResponse(SQLModel):
     id: UUID

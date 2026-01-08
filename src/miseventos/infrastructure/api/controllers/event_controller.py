@@ -3,7 +3,10 @@ from miseventos.entitis.event import EventEntity
 from miseventos.use_case.event_usecase import EventUseCase
 from typing import List
 from uuid import UUID
-from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import EventRespose
+from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import (
+    EventRespose,
+)
+
 
 def add_event_controller(usecase: EventUseCase):
     async def controller(body: EventEntity) -> EventRespose:
@@ -11,8 +14,9 @@ def add_event_controller(usecase: EventUseCase):
         if not response.success:
             raise HTTPException(status_code=400, detail=response.error_message)
         return response
-    
+
     return controller
+
 
 def find_by_title_controller(usecase: EventUseCase):
     async def controller(title: str) -> List[EventEntity]:
@@ -20,7 +24,7 @@ def find_by_title_controller(usecase: EventUseCase):
         if not response.success:
             raise HTTPException(status_code=400, detail=response.error_message)
         return response.events
-    
+
     return controller
 
 
@@ -32,12 +36,13 @@ def all_events_controller(usecase: EventUseCase):
         return response
 
     return controller
-    
+
+
 def delete_event_controller(usecase: EventUseCase):
     async def controller(event_id: UUID) -> UUID:
         response = usecase.delete_event(event_id)
         if not response.success:
             raise HTTPException(status_code=400, detail=response.error_message)
         return response
-    
+
     return controller

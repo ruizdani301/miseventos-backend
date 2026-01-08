@@ -3,6 +3,7 @@ from uuid import UUID
 from sqlmodel import SQLModel
 from miseventos.entitis.event import EventEntity
 
+
 class Response(SQLModel):
     id: Optional[UUID] = None
     success: bool
