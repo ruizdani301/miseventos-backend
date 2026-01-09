@@ -18,9 +18,8 @@ from miseventos.infrastructure.api.controllers.use_controller import (
 def register_usecase(db: Session = Depends(get_db)):
     repo = UserImplement(
         db
-    )  # instancia de UserImplement con la sesión de la base de datos
-    return UserUseCase(repo)  # instancia de UserUseCase con el con user implement
-
+    )  
+    return UserUseCase(repo)  
 
 user_router = APIRouter()
 

@@ -16,7 +16,7 @@ from miseventos.infrastructure.api.routes.speaker_routes import speaker_router
 create_tables()
 
 
-app = FastAPI()
+app = FastAPI(title="Mis Eventos")
 
 # Configurar CORS
 app.add_middleware(

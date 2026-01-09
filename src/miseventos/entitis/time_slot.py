@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, time
 from uuid import UUID
 from typing import Optional
 from uuid import UUID
@@ -9,8 +9,8 @@ from uuid import UUID
 class TimeSlotEntity:
     id: Optional[str] = None
     event_id: UUID = None
-    start_time: datetime = None
-    end_time: datetime = None
+    start_time: time = None
+    end_time: time = None
     created_at: datetime = None
     is_assigned: bool = False
 

@@ -42,6 +42,7 @@ async def register_speaker(
 async def get_speakers_by_event_id(
     event_id: UUID, usecase: SpeakerUseCase = Depends(register_speakercase)
 ):
+    
     response = get_speakers_by_event_id_controller(usecase)
     return await response(event_id)
 

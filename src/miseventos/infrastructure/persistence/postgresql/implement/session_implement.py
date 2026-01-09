@@ -70,20 +70,26 @@ class SessionImplement(SessionRepository):
         session_model = (
             self.session.query(SessionModel).filter(SessionModel.id == body.id).first()
         )
-        if session_model:
-            session_model.title = body.title
-            session_model.description = body.description
-            session_model.capacity = body.capacity
-            session_model.time_slot_id = body.time_slot_id
-            session_model.event_id = body.event_id
-            self.session.commit()
-            self.session.refresh(session_model)
-        return SessionEntity(
-            id=str(session_model.id),
-            title=session_model.title,
-            description=session_model.description,
-            created_at=session_model.created_at,
-            event_id=str(session_model.event_id),
-            capacity=session_model.capacity,
-            time_slot_id=session_model.time_slot_id,
-        )
+        print("en implement archivo")
+        print(session_model)
+        try:
+            if session_model:
+                session_model.title = body.title
+                session_model.description = body.description
+                session_model.capacity = body.capacity
+                session_model.time_slot_id = body.time_slot_id
+                session_model.event_id = body.event_id
+                self.session.commit()
+                self.session.refresh(session_model)
+            return SessionEntity(
+                id=str(session_model.id),
+                title=session_model.title,
+                description=session_model.description,
+                created_at=session_model.created_at,
+                event_id=str(session_model.event_id),
+                capacity=session_model.capacity,
+                time_slot_id=session_model.time_slot_id,
+            )
+        except:
+            self.session.rollback()
+            return None

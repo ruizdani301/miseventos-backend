@@ -1,9 +1,9 @@
-from datetime import datetime, timezone
+from datetime import datetime, time, timezone
 from typing import Optional
 from uuid import UUID, uuid4
 
-from sqlmodel import SQLModel, Field, Relationship
-
+from sqlmodel import SQLModel, Field, Relationship, Column
+from sqlalchemy import Time
 from .event_model import Event
 from .session_model import Session
 
@@ -15,8 +15,8 @@ class TimeSlot(SQLModel, table=True):
 
     event_id: UUID = Field(foreign_key="events.id", index=True)
 
-    start_time: datetime
-    end_time: datetime
+    start_time: time = Field(sa_column=Column(Time))
+    end_time: time = Field(sa_column=Column(Time))
 
     is_assigned: bool = Field(default=False)
 

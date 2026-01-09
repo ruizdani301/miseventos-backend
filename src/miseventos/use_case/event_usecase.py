@@ -8,7 +8,7 @@ from miseventos.infrastructure.persistence.postgresql.schemas.event_schema impor
 from miseventos.entitis.event import EventEntity
 from uuid import UUID
 from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import (
-    EventRespose,
+    EventRespose, EventsCompletedResponse
 )
 from miseventos.infrastructure.persistence.postgresql.schemas.schema import Response
 
@@ -49,17 +49,30 @@ class EventUseCase:
 
         return Response(success=True, error_message=None, event=event_saved)
 
-    def get_event_paginated(self, page: int, limit: int) -> EventRespose:
+    def get_event_paginated(self, page: int, limit: int) -> EventsCompletedResponse:
         events = self.event_implement.get_events_paginated(page=page, limit=limit)
+        print("VER SI DEVEULVE DATOS")
+        print(events)
         if not events:
-            return EventRespose(success=False, error_message="not events found.")
-        return EventRespose(success=True, events=events, error_message=None)
+            return EventsCompletedResponse(success=False, error_message="not events found.")
+        return EventsCompletedResponse(success=True,
+                                       events=events["data"],
+                                       total=events["total"],
+                                       page=events["page"],
+                                       total_pages=events["total_pages"],
+                                       page_size=events["page_size"],
+                                       error_message=None)
 
     def get_event_by_title(self, title: str) -> EventRespose:
         event = self.event_implement.get_event_by_title(title)
         if not event:
-            return EventRespose(success=False, error_message="Event not found.")
-        return EventRespose(success=True, events=event, error_message=None)
+            return EventsCompletedResponse(success=False, error_message="Event by title not found.")
+        return EventsCompletedResponse(success=True, events=event["data"],
+                                       error_message=None,
+                                       total=None,
+                                       page=None,
+                                       total_pages=None,
+                                       page_size=None)
 
     def delete_event(self, event_id: UUID) -> Response:
         deleted_event_id = self.event_implement.del_event(event_id)

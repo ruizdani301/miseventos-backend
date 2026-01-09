@@ -13,7 +13,7 @@ from miseventos.infrastructure.api.controllers.session_controller import (
 )
 from uuid import UUID
 from miseventos.infrastructure.persistence.postgresql.schemas.session_schema import (
-    SessionRequest,
+    SessionRequest, SessionUpdateRequest
 )
 from uuid import UUID
 
@@ -51,7 +51,7 @@ async def delete_session(
     response = delete_session_controller(usecase)
     return await response(session_id)
 
-    # @session_router.put("/session/")
-    # async def update_session(body: SessionRequest, usecase: SessionUseCase = Depends(register_sessioncase)):
-    #     response = update_session_controller(usecase)
+@session_router.put("/session/")
+async def update_session(body: SessionUpdateRequest, usecase: SessionUseCase = Depends(register_sessioncase)): 
+    response = update_session_controller(usecase)
     return await response(body)

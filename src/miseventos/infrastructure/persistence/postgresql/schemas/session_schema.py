@@ -14,7 +14,7 @@ class SessionRequest(SQLModel):
 
 
 class ResponseSession(SQLModel):
-    id: UUID
+    id: Optional[str] | UUID
     title: str
     description: str
     created_at: datetime
@@ -33,3 +33,7 @@ class SessionDeleteResponse(SQLModel):
     id: UUID
     success: bool
     error_message: str | None = None
+
+class SessionUpdateRequest(ResponseSession):
+    pass
+

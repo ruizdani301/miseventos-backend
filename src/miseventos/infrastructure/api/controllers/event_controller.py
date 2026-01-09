@@ -4,7 +4,7 @@ from miseventos.use_case.event_usecase import EventUseCase
 from typing import List
 from uuid import UUID
 from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import (
-    EventRespose,
+    EventRespose,EventsCompletedResponse
 )
 
 
@@ -19,7 +19,7 @@ def add_event_controller(usecase: EventUseCase):
 
 
 def find_by_title_controller(usecase: EventUseCase):
-    async def controller(title: str) -> List[EventEntity]:
+    async def controller(title: str) -> List[EventsCompletedResponse]:
         response = usecase.get_event_by_title(title)
         if not response.success:
             raise HTTPException(status_code=400, detail=response.error_message)
@@ -29,7 +29,7 @@ def find_by_title_controller(usecase: EventUseCase):
 
 
 def all_events_controller(usecase: EventUseCase):
-    async def controller(page: int, limit: int) -> List[EventEntity]:
+    async def controller(page: int, limit: int)-> List[EventsCompletedResponse]:
         response = usecase.get_event_paginated(page=page, limit=limit)
         if not response.success:
             raise HTTPException(status_code=400, detail=response.error_message)
