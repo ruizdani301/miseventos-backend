@@ -13,6 +13,8 @@ from miseventos.infrastructure.persistence.postgresql.schemas.schema import Resp
 from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import (
     SlotSaveResponse,
     SlotDeleteResponse,
+    SlotGroupSaveResponse,
+    SlotEventsResponse
 )
 
 
@@ -21,17 +23,27 @@ class SlotUseCase:
         self.slot_implement = slot_implement
 
     def save_slot(self, request: SlotRequest) -> SlotSaveResponse:
-        new_slot = SlotEntity(
-            start_time=request.start_time,
-            end_time=request.end_time,
-            event_id=request.event_id,
-            is_assigned=request.is_assigned,
-        )
-        slot_saved = self.slot_implement.add_slot(new_slot)
-        if not slot_saved:
-            return SlotSaveResponse(success=False, error_message="Error saving slot.")
+        slots = []
 
-        return SlotSaveResponse(success=True, error_message=None, slot=slot_saved)
+        for slot_req in request.time_slots:
+            slot = SlotEntity(
+                start_time=slot_req.start_time,
+                end_time=slot_req.end_time,
+                event_id=request.event_id,
+                is_assigned=request.is_assigned,
+            )
+
+            slot.validate_time_slot()
+
+            slots.append(slot)
+
+        print(slots)
+        slot_saved = self.slot_implement.add_slot(slots)
+     
+        if not slot_saved:
+            return SlotGroupSaveResponse(success=False, error_message="Error saving slot.")
+
+        return SlotGroupSaveResponse(success=True, error_message=None, slot=slot_saved)
 
     def get_slot_by_event_id(self, event_id: UUID) -> SlotSaveResponse:
         slots_list = self.slot_implement.get_slot_by_event_id(event_id=event_id)
@@ -49,3 +61,12 @@ class SlotUseCase:
                 success=False, error_message=response.error_message
             )
         return SlotDeleteResponse(id=response.id, success=True, error_message=None)
+
+    def get_slot_all(self, page:int, limit:int) -> SlotEventsResponse:
+        slots_list = self.slot_implement.get_all_slot(page=page, limit=limit)
+        print("UseCase Slots List:", slots_list)
+        if not slots_list:
+            return SlotEventsResponse(
+                success=False, error_message="No slots found for the given event ID."
+            )
+        return SlotEventsResponse(success=True, error_message=None, events=slots_list)

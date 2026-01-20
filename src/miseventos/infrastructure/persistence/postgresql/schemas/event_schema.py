@@ -1,6 +1,6 @@
 from miseventos.entitis.event import EventEntity
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, time
 from sqlmodel import SQLModel, Field
 from miseventos.infrastructure.persistence.postgresql.models.enum import EventStatus
 from miseventos.infrastructure.persistence.postgresql.schemas.session_schema import ResponseSession
@@ -16,13 +16,6 @@ class EventData(SQLModel):
     capacity: int
     status: EventStatus
     created_at: Optional[datetime] = None
-
-
-class EventRespose(SQLModel):
-    success: bool
-    error_message: str | None
-    events: list[EventData] | None
-
 
 class EventRequest(SQLModel):
     title: str
@@ -49,5 +42,36 @@ class EventsCompletedResponse(SQLModel):
     page_size: int | None
     total_pages: int | None
     events:List[EventNestedResponse] | None
-   
 
+class EventUpdateRequest(SQLModel):
+    id: Optional[str] | UUID = None
+    title: str
+    description: Optional[str] = None
+    start_date: datetime
+    end_date: datetime
+    capacity: int = Field(..., gt=0)
+    status: EventStatus = EventStatus.PUBLISHED
+
+class EventSessionResponse(SQLModel):
+    id: str
+    title : str
+
+class NewTimeRange(SQLModel):
+    id:UUID
+    start_time: time
+    end_time: time
+
+class EventSlotResponse(SQLModel):
+    id: UUID
+    title : str
+    time_slot : List[NewTimeRange]
+
+class EventRespose(SQLModel):
+    success: bool
+    error_message: str | None
+    events: list[EventData] | EventData | None = None
+
+class EventSlotRelationResponse(SQLModel):
+    success: bool
+    error_message: str | None
+    events :  List[EventSlotResponse]

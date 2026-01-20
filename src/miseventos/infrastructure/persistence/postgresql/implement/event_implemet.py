@@ -4,6 +4,10 @@ from sqlalchemy import orm, func
 from miseventos.infrastructure.persistence.postgresql.models.event_model import (
     Event as EventModel,
 )
+from sqlalchemy.orm import load_only
+from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import (
+    EventSlotResponse,
+    NewTimeRange)
 from miseventos.infrastructure.persistence.postgresql.models.session_model import Session
 from miseventos.infrastructure.persistence.postgresql.models.time_model import TimeSlot
 from miseventos.infrastructure.persistence.postgresql.models.speaker_model import Speaker
@@ -18,6 +22,7 @@ class EventImplement(EventRepository):
         self.session = session
 
     def add_event(self, event: EventEntity) -> EventEntity:
+   
         new_event_model = EventModel(
             title=event.title,
             description=event.description,
@@ -41,6 +46,38 @@ class EventImplement(EventRepository):
             status=new_event_model.status,
             created_at=new_event_model.created_at,
         )
+    
+    def get_events(self, page: int = 1, limit: int = 10) -> List[EventEntity]:
+        offset = (page - 1) * limit
+
+        try:
+            query = (
+                self.session.query(EventModel)
+                .order_by(EventModel.start_date.desc())
+                .offset(offset)
+                .limit(limit)
+            ).all()
+            #print(query)
+
+            return[
+                EventEntity(
+                    id=str(event.id),
+                    title=event.title,
+                    description=event.description,
+                    start_date=event.start_date,
+                    end_date=event.end_date,
+                    capacity=event.capacity,
+                    status=event.status,
+                    created_at=event.created_at,
+                )
+                for event in query
+            ]
+          
+
+        except Exception as e:
+            raise e
+
+
 
     def get_events_paginated(
         self, page: int = 1, limit: int = 10
@@ -216,8 +253,7 @@ class EventImplement(EventRepository):
                     "event": event_data["event"],
                     "sessions": sessions_list
                 })
-            print("POR TITULO")
-            print(processed_results)
+
             return {
                 "data": processed_results,
             }
@@ -232,3 +268,76 @@ class EventImplement(EventRepository):
             self.session.commit()
             return event_id
         return None
+
+    
+    def event_by_simple_title(self, s_title:str)->EventEntity:
+        event = self.session.query(EventModel).filter_by(title=s_title).first()
+        return event
+    
+    def update_event(self, request:EventEntity)->EventEntity :
+        try:
+            event_model = (
+                self.session.query(EventModel)
+                .filter(EventModel.id == request.id)
+                .first()
+            )
+
+            if event_model:
+                event_model.title = request.title
+                event_model.description = request.description
+                event_model.start_date = request.start_date
+                event_model.end_date = request.end_date
+                event_model.capacity = request.capacity
+                event_model.status = request.status
+        
+                
+                
+                self.session.commit()
+                self.session.refresh(event_model)
+                return EventEntity(
+                    id=str(event_model.id),
+                    title=event_model.title,
+                    description=event_model.description,
+                    start_date=event_model.start_date,
+                    end_date=event_model.end_date,
+                    capacity=event_model.capacity,
+                    status=event_model.status,
+                    created_at=event_model.created_at
+                    )
+        except Exception as e:
+            return e
+    
+    def get_event_slot_relation(self,)->List[EventSlotResponse]:
+        
+        try:
+            data = (self.session.query(EventModel).join(TimeSlot)
+                    .options(load_only(EventModel.id,
+                                       EventModel.title),
+                        orm.selectinload(EventModel.time_slot).load_only(
+                            TimeSlot.id,
+                            TimeSlot.start_time,
+                            TimeSlot.end_time
+                        )
+                    )
+                    .distinct()
+                    )
+                                                            
+            return [
+                EventSlotResponse(
+                    id=event.id,
+                    title=event.title,
+                    time_slot=[
+                        NewTimeRange(
+                            id=slot.id,
+                            start_time=slot.start_time,
+                            end_time=slot.end_time
+                        )
+                        for slot in event.time_slot
+                    ]
+                )
+                for event in data
+            ]       
+        except Exception as e:
+            return e
+   
+    

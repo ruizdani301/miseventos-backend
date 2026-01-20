@@ -3,7 +3,7 @@ from sqlmodel import SQLModel
 from datetime import datetime
 from typing import List
 from typing import Optional
-
+from datetime import time
 
 class SessionRequest(SQLModel):
     title: str
@@ -11,6 +11,8 @@ class SessionRequest(SQLModel):
     event_id: UUID
     capacity: int
     time_slot_id: UUID
+    speaker_id : str
+
 
 
 class ResponseSession(SQLModel):
@@ -34,6 +36,13 @@ class SessionDeleteResponse(SQLModel):
     success: bool
     error_message: str | None = None
 
-class SessionUpdateRequest(ResponseSession):
-    pass
+class SessionUpdateRequest(SQLModel):
+    id: str
+    title: str
+    description: str
+    event_id: UUID | str
+    capacity: int
+    time_slot_id: UUID | str
+    speaker_id : str
+   
 

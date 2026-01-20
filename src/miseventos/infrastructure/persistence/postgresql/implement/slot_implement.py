@@ -8,57 +8,51 @@ from miseventos.infrastructure.persistence.postgresql.schemas.schema import Resp
 from uuid import UUID
 from typing import List
 from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import (
-    SlotDeleteResponse,
+    SlotDeleteResponse, SlotGroupResponse, SlotRangeResponse, GetSlotsEventResponse
 )
-from sqlalchemy import and_
+from miseventos.infrastructure.persistence.postgresql.models.time_model import TimeSlot
+from miseventos.infrastructure.persistence.postgresql.models.event_model import Event
+#from sqlmodel import select
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
+
 
 
 class SlotImplement(SlotRepository):
     def __init__(self, session: orm.Session):
         self.session = session
 
-    def add_slot(self, slot: TimeSlotEntity) -> TimeSlotEntity | None:
-        """
-        Agrega un nuevo slot si no hay solapamiento con slots existentes.
-        Retorna None si hay conflicto.
-        """
-
-        # 2. Buscar slots existentes que se solapen
-        existing_slots = (
-            self.session.query(TimeSlotModel)
-            .filter(
-                and_(
-                    TimeSlotModel.event_id == slot.event_id,
-                    TimeSlotModel.start_time < slot.end_time,
-                    TimeSlotModel.end_time > slot.start_time,
-                )
+    def add_slot(self, slots: List[TimeSlot]) -> SlotGroupResponse | None:
+        
+        list_slots: List[TimeSlot] = []
+        for slot in slots:
+            new_slot = TimeSlot(
+                event_id=slot.event_id,
+                start_time=slot.start_time,
+                end_time=slot.end_time,
+                is_assigned=slot.is_assigned,
             )
-            .first()
-        )
+            list_slots.append(new_slot)
 
-        if existing_slots:
-            # Ya existe un slot que se solapa
-            return None
-
-        # 3. Crear y guardar el nuevo slot
-        new_slot_model = TimeSlotModel(
-            start_time=slot.start_time,
-            end_time=slot.end_time,
-            event_id=slot.event_id,
-            is_assigned=slot.is_assigned or False,
-        )
-
-        self.session.add(new_slot_model)
+        self.session.add_all(list_slots)
         self.session.commit()
-        self.session.refresh(new_slot_model)
 
-        return TimeSlotEntity(
-            id=str(new_slot_model.id),
-            start_time=new_slot_model.start_time,
-            end_time=new_slot_model.end_time,
-            event_id=new_slot_model.event_id,
-            is_assigned=new_slot_model.is_assigned,
-            created_at=new_slot_model.created_at,
+        for each_slot in list_slots:
+            self.session.refresh(each_slot)
+
+
+        return SlotGroupResponse(
+            id=str(list_slots[0].id),
+            event_id=list_slots[0].event_id,
+            is_assigned=list_slots[0].is_assigned,
+            created_at=list_slots[0].created_at,
+            slots=[
+                SlotRangeResponse(
+                    start_time=slot.start_time.isoformat(),
+                    end_time=slot.end_time.isoformat(),
+                )
+                for slot in list_slots
+            ],
         )
 
     def get_slot_by_event_id(self, event_id: UUID) -> List[TimeSlotEntity] | None:
@@ -87,6 +81,7 @@ class SlotImplement(SlotRepository):
         slot_models = self.session.query(TimeSlotModel).filter(
             TimeSlotModel.id == slot_id
         )
+        
         if slot_models.first() is None:
             return SlotDeleteResponse(
                 success=False, error_message="No slots found for the given event ID."
@@ -94,3 +89,37 @@ class SlotImplement(SlotRepository):
         slot_models.delete()
         self.session.commit()
         return SlotDeleteResponse(id=slot_id, success=True, error_message=None)
+
+
+    def get_all_slot(self, page: int, limit: int) -> List[GetSlotsEventResponse]:
+        offset = (page - 1) * limit
+
+        try:
+            statement = (
+            select(Event)
+            .options(selectinload(Event.time_slot))
+            .order_by(Event.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+        )
+            events = self.session.execute(statement).scalars().all()
+            return [
+                GetSlotsEventResponse(
+                    id=event.id,
+                    title=event.title,
+                    description=event.description,
+                    start_date=event.start_date,
+                    capacity=event.capacity,
+                    time_slots=[
+                        SlotRangeResponse(
+                            start_time=slot.start_time.isoformat(),
+                            end_time=slot.end_time.isoformat(),
+                        )
+                        for slot in event.time_slot
+                    ]
+                )
+                for event in events
+            ]
+        except Exception as e:
+            raise e
+

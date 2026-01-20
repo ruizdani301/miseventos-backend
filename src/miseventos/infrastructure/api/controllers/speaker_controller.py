@@ -46,3 +46,12 @@ def update_speaker_controller(usecase: SpeakerUseCase):
         return response
 
     return controller
+
+def get_speakers_controller(usecase: SpeakerUseCase):
+    async def controller() -> SpeakerResponse:
+        response = usecase.get_speakers()
+        if not response.success:
+            raise HTTPException(status_code=404, detail=response.error_message)
+        return response
+
+    return controller

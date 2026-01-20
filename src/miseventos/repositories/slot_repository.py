@@ -3,7 +3,9 @@ from miseventos.entitis.time_slot import TimeSlotEntity
 from uuid import UUID
 from typing import List
 from miseventos.infrastructure.persistence.postgresql.schemas.schema import Response
-
+from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import (
+    GetSlotsEventResponse
+) 
 
 class SlotRepository(ABC):
     @abstractmethod
@@ -16,4 +18,8 @@ class SlotRepository(ABC):
 
     @abstractmethod
     def delete_slot(self, event_id: UUID) -> Response:
+        pass
+
+    @abstractmethod
+    def get_all_slot(self, page: int, limit: int) -> GetSlotsEventResponse:
         pass

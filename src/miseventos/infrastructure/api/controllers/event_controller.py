@@ -4,13 +4,18 @@ from miseventos.use_case.event_usecase import EventUseCase
 from typing import List
 from uuid import UUID
 from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import (
-    EventRespose,EventsCompletedResponse
+    EventRespose,
+    EventsCompletedResponse,
+    EventRequest,
+    EventUpdateRequest,EventSlotRelationResponse
 )
 
 
 def add_event_controller(usecase: EventUseCase):
-    async def controller(body: EventEntity) -> EventRespose:
+    async def controller(body: EventRequest) -> EventRespose:
+    
         response = usecase.save_event(body)
+        
         if not response.success:
             raise HTTPException(status_code=400, detail=response.error_message)
         return response
@@ -46,3 +51,37 @@ def delete_event_controller(usecase: EventUseCase):
         return response
 
     return controller
+
+def update_event_controller(usecase: EventUseCase):
+    async def controller(body: EventUpdateRequest):
+        response = usecase.update_event(body)
+
+        if not response.success:
+            raise HTTPException(
+                status_code=400,
+                detail=response.error_message
+            )
+
+        return response
+
+    return controller
+
+def get_all_events_controller(usecase: EventUseCase):
+    async def controller(page: int, limit: int)-> EventRespose:
+        response = usecase.get_events_all(page=page, limit=limit)
+        if not response.success:
+            raise HTTPException(status_code=400, detail=response.error_message)
+        return response
+
+    return controller
+
+def get_events_slot_controller(usecase: EventUseCase):
+    async def controller()-> EventSlotRelationResponse:
+        response = usecase.get_event_slot()
+        if not response.success:
+            raise HTTPException(status_code=400, detail=response.error_message)
+        print(response)
+        return response
+
+    return controller
+  

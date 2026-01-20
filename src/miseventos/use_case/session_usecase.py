@@ -8,6 +8,8 @@ from typing import List
 from miseventos.infrastructure.persistence.postgresql.schemas.session_schema import (
     SessionResponse,
     SessionDeleteResponse,
+    SessionRequest,
+    SessionUpdateRequest
 )
 
 
@@ -23,7 +25,7 @@ class SessionUseCase:
             )
         return SessionResponse(success=True, error_message=None, session=data_session)
 
-    def add_session(self, session: SessionEntity) -> SessionResponse:
+    def add_session(self, session: SessionRequest) -> SessionResponse:
         new_session = self.session_implement.add_session(session)
         if not new_session:
             return SessionResponse(success=False, error_message="Error saving session.")
@@ -37,7 +39,7 @@ class SessionUseCase:
             )
         return SessionDeleteResponse(id=deleted_id, success=True, error_message=None)
 
-    def update_session(self, session: SessionEntity) -> SessionResponse:
+    def update_session(self, session: SessionUpdateRequest) -> SessionResponse:
         updated_session = self.session_implement.update_session(session)
         if not updated_session:
             return SessionResponse(
@@ -46,3 +48,11 @@ class SessionUseCase:
         return SessionResponse(
             success=True, error_message=None, session=updated_session
         )
+
+    def get_sessions(self,) -> SessionResponse | None:
+        data_session = self.session_implement.get_sessions()
+        if not data_session:
+            return SessionResponse(
+                success=False, error_message="No sessions found."
+            )
+        return SessionResponse(success=True, error_message=None, session=data_session)

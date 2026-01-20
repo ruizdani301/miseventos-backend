@@ -7,6 +7,7 @@ from miseventos.infrastructure.api.controllers.speaker_controller import (
     get_speakers_by_event_id_controller,
     delete_speaker_controller,
     update_speaker_controller,
+    get_speakers_controller
 )
 from uuid import UUID
 from miseventos.infrastructure.persistence.postgresql.schemas.session_schema import (
@@ -41,7 +42,13 @@ async def register_speaker(
 @speaker_router.get("/speaker/{event_id}")
 async def get_speakers_by_event_id(
     event_id: UUID, usecase: SpeakerUseCase = Depends(register_speakercase)
-):
+    ):
+    """
+        Endpoint con logica realizada pendiente de implementación
+        :param event_id: ID del evento
+        :type event_id: UUID
+      
+    """
     
     response = get_speakers_by_event_id_controller(usecase)
     return await response(event_id)
@@ -61,3 +68,12 @@ async def update_speaker(
 ):
     response = update_speaker_controller(usecase)
     return await response(body)
+
+
+@speaker_router.get("/speaker/")
+async def get_speakers(
+    usecase: SpeakerUseCase = Depends(register_speakercase)
+):
+    
+    response = get_speakers_controller(usecase)
+    return await response()

@@ -10,11 +10,14 @@ from miseventos.infrastructure.api.controllers.event_controller import (
     find_by_title_controller,
     all_events_controller,
     delete_event_controller,
+    update_event_controller,
+    get_all_events_controller,
+    get_events_slot_controller
 )
 from miseventos.entitis.event import EventEntity
 from uuid import UUID
 from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import (
-    EventRequest,
+    EventRequest,EventUpdateRequest
 )
 
 
@@ -29,10 +32,11 @@ event_router = APIRouter()
 @event_router.post("/event/")
 async def register_event(
     body: EventRequest, usecase: EventUseCase = Depends(register_eventcase)
-):
+): 
+    
     response = add_event_controller(usecase)
-    print("en controller event")
     print(response.__dict__)
+    
     return await response(body)
 
 
@@ -55,6 +59,30 @@ async def get_all_events(
 @event_router.delete("/event/{event_id}")
 async def delete_event(
     event_id: UUID, usecase: EventUseCase = Depends(register_eventcase)
-):
+):  
+    
     response = delete_event_controller(usecase)
     return await response(event_id)
+
+@event_router.put("/event/")
+async def register_event(
+    body: EventUpdateRequest, usecase: EventUseCase = Depends(register_eventcase)
+): 
+    
+    response = update_event_controller(usecase)
+    
+    return await response(body)
+
+@event_router.get("/event/all/")
+async def get_all_events(
+    page: int = 1, limit: int = 10, usecase: EventUseCase = Depends(register_eventcase)
+):
+    response = get_all_events_controller(usecase)
+    return await response(page, limit)
+
+@event_router.get("/event_slot/")
+async def get_events_slot(
+    usecase: EventUseCase = Depends(register_eventcase)
+):
+    response = get_events_slot_controller(usecase)
+    return await response()

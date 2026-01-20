@@ -2,11 +2,14 @@ from abc import ABC, abstractmethod
 from uuid import UUID
 from typing import List
 from miseventos.entitis.speaker import SpeakerEntity
+from miseventos.infrastructure.persistence.postgresql.schemas.speaker_schema import (
+     ResponseSimpleSpeaker,
+     SpeakerUpdateRequest)
 
 
 class SpeakerRepository(ABC):
     @abstractmethod
-    def add_speaker(self, speaker: SpeakerEntity) -> SpeakerEntity:
+    def add_speaker(self, speaker: SpeakerEntity) -> ResponseSimpleSpeaker:
         pass
 
     @abstractmethod
@@ -18,5 +21,9 @@ class SpeakerRepository(ABC):
         pass
 
     @abstractmethod
-    def update_speaker(self, speaker: SpeakerEntity) -> SpeakerEntity:
+    def update_speaker(self, speaker: SpeakerUpdateRequest) -> SpeakerEntity:
         pass
+
+    @abstractmethod
+    def get_speaker(self,) -> List[SpeakerEntity] | None:
+            pass

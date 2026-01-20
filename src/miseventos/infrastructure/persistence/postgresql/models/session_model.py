@@ -31,5 +31,9 @@ class Session(SQLModel, table=True):
     event: Optional["Event"] = Relationship(back_populates="session")
     time_slot: Optional["TimeSlot"] = Relationship(back_populates="session")
 
-    session_speakers: List["SessionSpeaker"] = Relationship(back_populates="session")
+    session_speakers: List["SessionSpeaker"] = Relationship(back_populates="session",
+                                                            sa_relationship_kwargs={
+                                                                "cascade": "all, delete",
+                                                                "passive_deletes": True
+                                                            })
     registrations: List["SessionRegistration"] = Relationship(back_populates="session")

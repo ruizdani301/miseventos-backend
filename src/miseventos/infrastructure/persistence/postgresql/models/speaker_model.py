@@ -20,4 +20,8 @@ class Speaker(SQLModel, table=True):
 
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-    speaker_sessions: List["SessionSpeaker"] = Relationship(back_populates="speaker")
+    speaker_sessions: List["SessionSpeaker"] = Relationship(back_populates="speaker",
+                                                            sa_relationship_kwargs={
+                                                                "cascade": "all, delete",
+                                                                "passive_deletes": True
+                                                            })
