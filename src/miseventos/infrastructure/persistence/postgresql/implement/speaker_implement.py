@@ -23,19 +23,23 @@ class SpeakerImplement(SpeakerRepository):
         self._session = session
 
     def add_speaker(self, speaker: SpeakerEntity) -> ResponseSimpleSpeaker:
-        new_speaker_model = SpeakerModel(
-            full_name=speaker.full_name, email=speaker.email, bio=speaker.bio
-        )
-        self._session.add(new_speaker_model)
-        self._session.commit()
-        self._session.refresh(new_speaker_model)
-        return ResponseSimpleSpeaker(
-            id=str(new_speaker_model.id),
-            #full_name=new_speaker_model.full_name,
-            #bio=new_speaker_model.bio,
-            #email=new_speaker_model.email,
-            created_at=new_speaker_model.created_at,
-        )
+        try:
+            new_speaker_model = SpeakerModel(
+                full_name=speaker.full_name, email=speaker.email, bio=speaker.bio
+            )
+            self._session.add(new_speaker_model)
+            self._session.commit()
+            self._session.refresh(new_speaker_model)
+            return ResponseSimpleSpeaker(
+                id=str(new_speaker_model.id),
+                #full_name=new_speaker_model.full_name,
+                #bio=new_speaker_model.bio,
+                #email=new_speaker_model.email,
+                created_at=new_speaker_model.created_at,
+            )
+        except Exception as e:
+            self._session.rollback()
+            raise e
 
     def get_speaker_by_event_id(self, event_id: UUID) -> List[SpeakerEntity] | None:
         try:
@@ -68,19 +72,23 @@ class SpeakerImplement(SpeakerRepository):
 
         except Exception as e:
             self._session.rollback()
-            return None
+            raise e
 
     def delete_speaker(self, speaker_id: UUID) -> UUID:
-        speaker_model = (
-            self._session.query(SpeakerModel)
-            .filter(SpeakerModel.id == speaker_id)
-            .first()
-        )
-        if speaker_model:
-            self._session.delete(speaker_model)
-            self._session.commit()
-            return speaker_id
-        return None
+        try:
+            speaker_model = (
+                self._session.query(SpeakerModel)
+                .filter(SpeakerModel.id == speaker_id)
+                .first()
+            )
+            if speaker_model:
+                self._session.delete(speaker_model)
+                self._session.commit()
+                return speaker_id
+            return None
+        except Exception as e:
+            self._session.rollback()
+            raise e
 
     def update_speaker(self, speaker: SpeakerUpdateRequest) -> SpeakerEntity:
         try:
@@ -105,7 +113,7 @@ class SpeakerImplement(SpeakerRepository):
                 )
         except Exception as e:
             self._session.rollback()
-            return e
+            raise e
     
 
     def get_speaker(self,) -> List[SpeakerEntity] | None:

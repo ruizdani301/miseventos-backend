@@ -4,7 +4,8 @@ from miseventos.infrastructure.persistence.postgresql.implement.event_implemet i
 )
 from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import (
     EventRequest,
-    EventSlotRelationResponse
+    EventSlotRelationResponse,
+    EventNotSlotsResponse
 )
 from miseventos.entitis.event import EventEntity
 from uuid import UUID
@@ -126,3 +127,11 @@ class EventUseCase:
             return EventSlotRelationResponse(success=False, error_message= "No data available", events=None)
         
         return EventSlotRelationResponse(success=True, error_message= None, events=event_slot)
+    
+    def get_event_not_in_slot(self):
+        event_slot = self.event_implement.get_event_not_in_timeslot()
+        
+        if not event_slot:
+            return EventNotSlotsResponse(success=False, error_message= "No data available", events=None)
+        
+        return EventNotSlotsResponse(success=True, error_message= None, events=event_slot)

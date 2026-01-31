@@ -7,7 +7,8 @@ from miseventos.infrastructure.persistence.postgresql.models.event_model import 
 from sqlalchemy.orm import load_only
 from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import (
     EventSlotResponse,
-    NewTimeRange)
+    NewTimeRange,
+    EventWithOutResponse)
 from miseventos.infrastructure.persistence.postgresql.models.session_model import Session
 from miseventos.infrastructure.persistence.postgresql.models.time_model import TimeSlot
 from miseventos.infrastructure.persistence.postgresql.models.speaker_model import Speaker
@@ -22,30 +23,33 @@ class EventImplement(EventRepository):
         self.session = session
 
     def add_event(self, event: EventEntity) -> EventEntity:
-   
-        new_event_model = EventModel(
-            title=event.title,
-            description=event.description,
-            start_date=event.start_date,
-            end_date=event.end_date,
-            capacity=event.capacity,
-            status=(
-                event.status.value if hasattr(event.status, "value") else event.status
-            ),
-        )
-        self.session.add(new_event_model)
-        self.session.commit()
-        self.session.refresh(new_event_model)
-        return EventEntity(
-            id=str(new_event_model.id),
-            title=new_event_model.title,
-            description=new_event_model.description,
-            start_date=new_event_model.start_date,
-            end_date=new_event_model.end_date,
-            capacity=new_event_model.capacity,
-            status=new_event_model.status,
-            created_at=new_event_model.created_at,
-        )
+        try:
+            new_event_model = EventModel(
+                title=event.title,
+                description=event.description,
+                start_date=event.start_date,
+                end_date=event.end_date,
+                capacity=event.capacity,
+                status=(
+                    event.status.value if hasattr(event.status, "value") else event.status
+                ),
+            )
+            self.session.add(new_event_model)
+            self.session.commit()
+            self.session.refresh(new_event_model)
+            return EventEntity(
+                id=str(new_event_model.id),
+                title=new_event_model.title,
+                description=new_event_model.description,
+                start_date=new_event_model.start_date,
+                end_date=new_event_model.end_date,
+                capacity=new_event_model.capacity,
+                status=new_event_model.status,
+                created_at=new_event_model.created_at,
+            )
+        except Exception as e:
+            self.session.rollback()
+            raise e
     
     def get_events(self, page: int = 1, limit: int = 10) -> List[EventEntity]:
         offset = (page - 1) * limit
@@ -75,6 +79,7 @@ class EventImplement(EventRepository):
           
 
         except Exception as e:
+            self.session.rollback()
             raise e
 
 
@@ -262,17 +267,24 @@ class EventImplement(EventRepository):
             return None
 
     def del_event(self, event_id: UUID) -> UUID:
-        event_model = self.session.query(EventModel).filter_by(id=event_id).first()
-        if event_model:
-            self.session.delete(event_model)
-            self.session.commit()
-            return event_id
-        return None
+        try:
+            event_model = self.session.query(EventModel).filter_by(id=event_id).first()
+            if event_model:
+                self.session.delete(event_model)
+                self.session.commit()
+                return event_id
+            return None
+        except Exception as e:
+            self.session.rollback()
+            raise e
 
     
     def event_by_simple_title(self, s_title:str)->EventEntity:
-        event = self.session.query(EventModel).filter_by(title=s_title).first()
-        return event
+        try:
+            event = self.session.query(EventModel).filter_by(title=s_title).first()
+            return event
+        except Exception as e:
+            raise e
     
     def update_event(self, request:EventEntity)->EventEntity :
         try:
@@ -310,7 +322,7 @@ class EventImplement(EventRepository):
     def get_event_slot_relation(self,)->List[EventSlotResponse]:
         
         try:
-            data = (self.session.query(EventModel).join(TimeSlot)
+            data = (self.session.query(EventModel).outerjoin(TimeSlot)
                     .options(load_only(EventModel.id,
                                        EventModel.title),
                         orm.selectinload(EventModel.time_slot).load_only(
@@ -341,3 +353,25 @@ class EventImplement(EventRepository):
             return e
    
     
+    def get_event_not_in_timeslot(self,)->List[EventWithOutResponse]:
+        
+        try:
+            data = (
+                self.session.query(EventModel)
+                .outerjoin(TimeSlot, TimeSlot.event_id == EventModel.id)
+                .filter(TimeSlot.id == None)
+                .options(load_only(EventModel.id, EventModel.title))
+                .all()
+            )
+                                            
+          
+            return [
+                    EventWithOutResponse(
+                        event_id=event.id,
+                        title=event.title,
+                        
+                    )
+                    for event in data
+                ]              
+        except Exception as e:
+            return e

@@ -35,6 +35,7 @@ speaker_router = APIRouter()
 async def register_speaker(
     body: SpeakerRequest, usecase: SpeakerUseCase = Depends(register_speakercase)
 ):
+    """Registra un nuevo orador."""
     response = save_speaker_controller(usecase)
     return await response(body)
 
@@ -43,12 +44,7 @@ async def register_speaker(
 async def get_speakers_by_event_id(
     event_id: UUID, usecase: SpeakerUseCase = Depends(register_speakercase)
     ):
-    """
-        Endpoint con logica realizada pendiente de implementación
-        :param event_id: ID del evento
-        :type event_id: UUID
-      
-    """
+    """Obtiene todos los oradores que participan en un evento específico."""
     
     response = get_speakers_by_event_id_controller(usecase)
     return await response(event_id)
@@ -58,6 +54,7 @@ async def get_speakers_by_event_id(
 async def delete_speaker(
     speaker_id: UUID, usecase: SpeakerUseCase = Depends(register_speakercase)
 ):
+    """Elimina un orador por su ID."""
     response = delete_speaker_controller(usecase)
     return await response(speaker_id)
 
@@ -66,6 +63,7 @@ async def delete_speaker(
 async def update_speaker(
     body: SpeakerUpdateRequest, usecase: SpeakerUseCase = Depends(register_speakercase)
 ):
+    """Actualiza la información de un orador existente."""
     response = update_speaker_controller(usecase)
     return await response(body)
 
@@ -74,6 +72,7 @@ async def update_speaker(
 async def get_speakers(
     usecase: SpeakerUseCase = Depends(register_speakercase)
 ):
+    """Obtiene una lista de todos los oradores."""
     
     response = get_speakers_controller(usecase)
     return await response()

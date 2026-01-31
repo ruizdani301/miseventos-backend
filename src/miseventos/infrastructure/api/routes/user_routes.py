@@ -28,6 +28,7 @@ user_router = APIRouter()
 async def register_user(
     body: UserRequest, usecase: UserUseCase = Depends(register_usecase)
 ):
+    """Registra un nuevo usuario en el sistema."""
     response = add_user_controller(usecase)
 
     return await response(body)
@@ -37,5 +38,6 @@ async def register_user(
 async def get_user_by_email(
     email: str, usecase: UserUseCase = Depends(register_usecase)
 ):
+    """Busca un usuario por su dirección de correo electrónico."""
     response = find_by_email_controller(usecase)
     return await response(email)

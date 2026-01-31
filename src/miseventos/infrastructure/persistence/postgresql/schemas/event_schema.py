@@ -75,3 +75,12 @@ class EventSlotRelationResponse(SQLModel):
     success: bool
     error_message: str | None
     events :  List[EventSlotResponse]
+
+class EventWithOutResponse(SQLModel):
+    event_id: UUID
+    title : str
+
+class EventNotSlotsResponse(SQLModel):
+    success: bool
+    error_message: str | None
+    events :  List[EventWithOutResponse]

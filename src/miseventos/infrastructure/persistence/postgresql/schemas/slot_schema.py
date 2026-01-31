@@ -31,6 +31,11 @@ class SlotRangeResponse(SQLModel):
     start_time: str
     end_time: str
 
+class SlotRangeIdResponse(SQLModel):
+    id: UUID
+    start_time: str
+    end_time: str
+
 class SlotGroupResponse(SQLModel):
     id: str
     event_id: UUID | str
@@ -38,6 +43,17 @@ class SlotGroupResponse(SQLModel):
     slots: List[SlotRangeResponse]
     created_at: datetime
 
+class SlotGroupUpdate(SQLModel):
+    event_id: UUID | str
+    is_assigned: bool
+    slots: List[SlotRangeIdResponse]
+    created_at: datetime
+
+class SlotGroupUpdateResponse(SQLModel):
+    success: bool
+    error_message: str | None = None
+    slot: SlotGroupUpdate
+   
 class SlotGroupSaveResponse(SQLModel):
     success: bool
     error_message: str | None = None
@@ -62,3 +78,15 @@ class SlotEventsResponse(SQLModel):
     success: bool
     error_message: str | None = None
     events:  List[GetSlotsEventResponse] | None = None
+
+class TimeRangeId(SQLModel):
+    id: UUID
+    start_time: time
+    end_time: time
+
+
+class SlotUpdateRequest(SQLModel):
+    event_id: UUID
+    time_slots: List[TimeRangeId]
+    is_assigned: bool = False
+

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from miseventos.entitis.event import EventEntity
 from uuid import UUID
 from typing import List
-from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import EventSlotResponse
+from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import EventSlotResponse, EventWithOutResponse
 
 
 class EventRepository(ABC):
@@ -37,4 +37,8 @@ class EventRepository(ABC):
 
     @abstractmethod
     def get_event_slot_relation(self,) -> List[EventSlotResponse]:
+        pass
+
+    @abstractmethod
+    def get_event_not_in_timeslot(self,) -> List[EventWithOutResponse]:
         pass

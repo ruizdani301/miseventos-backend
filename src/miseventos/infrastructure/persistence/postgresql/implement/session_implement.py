@@ -19,30 +19,30 @@ class SessionImplement(SessionRepository):
         self.session: orm.Session = session
 
     def add_session(self, body: SessionRequest) -> SessionModel:
-    # 1️⃣ Validar speaker
-        speaker_id = UUID(body.speaker_id)
+        try:
+            # 1️⃣ Validar speaker
+            speaker_id = UUID(body.speaker_id)
 
-        speaker = (
-            self.session.query(Speaker)
-            .filter(Speaker.id == speaker_id)
-            .first()
-        )
-
-        if not speaker:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Speaker no encontrado"
+            speaker = (
+                self.session.query(Speaker)
+                .filter(Speaker.id == speaker_id)
+                .first()
             )
 
-        new_session_model = SessionModel(
-            title=body.title,
-            description=body.description,
-            event_id=body.event_id,
-            capacity=body.capacity,
-            time_slot_id=body.time_slot_id,
-        )
+            if not speaker:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Speaker no encontrado"
+                )
 
-        try:
+            new_session_model = SessionModel(
+                title=body.title,
+                description=body.description,
+                event_id=body.event_id,
+                capacity=body.capacity,
+                time_slot_id=body.time_slot_id,
+            )
+
             self.session.add(new_session_model)
             self.session.flush()  
 
@@ -65,38 +65,45 @@ class SessionImplement(SessionRepository):
 
 
     def get_session_by_event_id(self, event_id: UUID) -> List[SessionEntity] | None:
-
-        session_models = (
-            self.session.query(SessionModel)
-            .filter(SessionModel.event_id == event_id)
-            .all()
-        )
-        if session_models:
-            return [
-                SessionEntity(
-                    id=str(session_model.id),
-                    title=session_model.title,
-                    description=session_model.description,
-                    created_at=session_model.created_at,
-                    event_id=str(session_model.event_id),
-                    capacity=session_model.capacity,
-                    time_slot_id=session_model.time_slot_id,
-                )
-                for session_model in session_models
-            ]
-        return None
+        try:
+            session_models = (
+                self.session.query(SessionModel)
+                .filter(SessionModel.event_id == event_id)
+                .all()
+            )
+            if session_models:
+                return [
+                    SessionEntity(
+                        id=str(session_model.id),
+                        title=session_model.title,
+                        description=session_model.description,
+                        created_at=session_model.created_at,
+                        event_id=str(session_model.event_id),
+                        capacity=session_model.capacity,
+                        time_slot_id=session_model.time_slot_id,
+                    )
+                    for session_model in session_models
+                ]
+            return None
+        except Exception as e:
+            raise e
 
     def delete_session(self, body_id: UUID) -> UUID:
-        session_model = (
-            self.session.query(SessionModel).filter(SessionModel.id == body_id).first()
-        )
-        if session_model:
-            self.session.delete(session_model)
-            self.session.commit()
-            return body_id
-        return None
+        try:
+            session_model = (
+                self.session.query(SessionModel).filter(SessionModel.id == body_id).first()
+            )
+            if session_model:
+                self.session.delete(session_model)
+                self.session.commit()
+                return body_id
+            return None
+        except Exception as e:
+            self.session.rollback()
+            raise e
 
     def update_session(self, body: SessionUpdateRequest) -> SessionModel:
+        
         session_model = (
             self.session.query(SessionModel)
             .filter(SessionModel.id == body.id)
@@ -134,23 +141,20 @@ class SessionImplement(SessionRepository):
             if session_model.session_speakers
             else None
         )
-
-        if current_speaker_id != new_speaker_id:
-            session_model.session_speakers.clear()
-            session_model.session_speakers.append(
-                SessionSpeaker(speaker_id=new_speaker_id)
-            )
-
         try:
+            if current_speaker_id != new_speaker_id:
+                session_model.session_speakers.clear()
+                session_model.session_speakers.append(
+                    SessionSpeaker(speaker_id=new_speaker_id)
+                )
+
             self.session.commit()
             self.session.refresh(session_model)
             return session_model
-        except Exception:
+        except Exception as e:
             self.session.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Error actualizando la sesión"
-            )
+            raise e
+        
 
     def get_sessions(self) -> List[SessionEntity] | None:
         try:

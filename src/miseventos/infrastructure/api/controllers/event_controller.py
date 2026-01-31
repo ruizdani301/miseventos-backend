@@ -7,7 +7,7 @@ from miseventos.infrastructure.persistence.postgresql.schemas.event_schema impor
     EventRespose,
     EventsCompletedResponse,
     EventRequest,
-    EventUpdateRequest,EventSlotRelationResponse
+    EventUpdateRequest,EventSlotRelationResponse, EventNotSlotsResponse
 )
 
 
@@ -80,8 +80,17 @@ def get_events_slot_controller(usecase: EventUseCase):
         response = usecase.get_event_slot()
         if not response.success:
             raise HTTPException(status_code=400, detail=response.error_message)
-        print(response)
+
         return response
 
     return controller
-  
+
+def get_events_not_slot_controller(usecase: EventUseCase):
+    async def controller()-> EventNotSlotsResponse:
+        response = usecase.get_event_not_in_slot()
+        if not response.success:
+            raise HTTPException(status_code=400, detail=response.error_message)
+     
+        return response
+
+    return controller

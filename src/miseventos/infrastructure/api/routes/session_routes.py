@@ -31,6 +31,7 @@ session_router = APIRouter()
 async def register_session(
     body: SessionRequest, usecase: SessionUseCase = Depends(register_sessioncase)
 ):
+    """Registra una nueva sesión en un evento."""
     response = create_session_controller(usecase)
     return await response(body)
 
@@ -39,6 +40,7 @@ async def register_session(
 async def get_sessions_by_event_id(
     event_id: UUID, usecase: SessionUseCase = Depends(register_sessioncase)
 ):
+    """Obtiene todas las sesiones asociadas a un ID de evento."""
     response = get_sessions_by_event_id_controller(usecase)
     return await response(event_id)
 
@@ -47,11 +49,13 @@ async def get_sessions_by_event_id(
 async def delete_session(
     session_id: UUID, usecase: SessionUseCase = Depends(register_sessioncase)
 ):
+    """Elimina una sesión por su ID."""
     response = delete_session_controller(usecase)
     return await response(session_id)
 
 @session_router.put("/session/")
 async def update_session(body: SessionUpdateRequest, usecase: SessionUseCase = Depends(register_sessioncase)): 
+    """Actualiza la información de una sesión existente."""
     print(body)
     response = update_session_controller(usecase)
     return await response(body)
@@ -60,5 +64,6 @@ async def update_session(body: SessionUpdateRequest, usecase: SessionUseCase = D
 async def get_sessions(
     usecase: SessionUseCase = Depends(register_sessioncase)
 ):
+    """Obtiene una lista de todas las sesiones."""
     response = get_sessions_controller(usecase)
     return await response()

@@ -4,7 +4,7 @@ from uuid import UUID
 from typing import List
 from miseventos.infrastructure.persistence.postgresql.schemas.schema import Response
 from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import (
-    GetSlotsEventResponse
+    GetSlotsEventResponse,SlotUpdateRequest, SlotGroupResponse, SlotGroupUpdate
 ) 
 
 class SlotRepository(ABC):
@@ -22,4 +22,8 @@ class SlotRepository(ABC):
 
     @abstractmethod
     def get_all_slot(self, page: int, limit: int) -> GetSlotsEventResponse:
+        pass
+
+    @abstractmethod
+    def update_slots_batch(self, slots: SlotUpdateRequest) -> SlotGroupUpdate:
         pass

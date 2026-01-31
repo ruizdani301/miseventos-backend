@@ -14,7 +14,9 @@ from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import
     SlotSaveResponse,
     SlotDeleteResponse,
     SlotGroupSaveResponse,
-    SlotEventsResponse
+    SlotEventsResponse,
+    SlotGroupUpdateResponse,
+    SlotUpdateRequest
 )
 
 
@@ -70,3 +72,9 @@ class SlotUseCase:
                 success=False, error_message="No slots found for the given event ID."
             )
         return SlotEventsResponse(success=True, error_message=None, events=slots_list)
+
+    def update_slots_batch(self, slots_data: SlotUpdateRequest) -> SlotGroupUpdateResponse:
+        update_slots = self.slot_implement.update_slots_batch(slots_data)
+        if not update_slots:
+            return SlotGroupUpdateResponse(success=False, error_message="Error updating slots.")
+        return SlotGroupUpdateResponse(success=True, error_message=None, slot=update_slots)

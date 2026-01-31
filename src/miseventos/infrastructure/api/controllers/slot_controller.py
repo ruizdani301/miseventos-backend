@@ -9,7 +9,7 @@ from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import
     SlotRequest,
 )
 from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import (
-    SlotSaveResponse,
+    SlotSaveResponse,SlotGroupUpdateResponse,SlotUpdateRequest
 )
 
 
@@ -49,6 +49,16 @@ def delete_slot_controller(usecase: SlotUseCase):
 def all_slots_controller(usecase: SlotUseCase):
     async def controller(page: int, limit: int)-> SlotEventsResponse :
         response = usecase.get_slot_all(page=page, limit=limit)
+        if not response.success:
+            raise HTTPException(status_code=400, detail=response.error_message)
+        return response
+
+    return controller
+
+
+def update_slots_batch_controller(usecase: SlotUseCase):
+    async def controller(body: SlotUpdateRequest) -> SlotGroupUpdateResponse:
+        response = usecase.update_slots_batch(body)
         if not response.success:
             raise HTTPException(status_code=400, detail=response.error_message)
         return response
