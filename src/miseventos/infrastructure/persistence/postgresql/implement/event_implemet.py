@@ -104,10 +104,10 @@ class EventImplement(EventRepository):
                     Speaker
                 )
                 .select_from(EventModel)
-                .outerjoin(Session, EventModel.id == Session.event_id)
-                .outerjoin(TimeSlot, Session.time_slot_id == TimeSlot.id)
-                .outerjoin(SessionSpeaker, Session.id == SessionSpeaker.session_id)
-                .outerjoin(Speaker, SessionSpeaker.speaker_id == Speaker.id)
+                .join(Session, EventModel.id == Session.event_id)
+                .join(TimeSlot, Session.time_slot_id == TimeSlot.id)
+                .join(SessionSpeaker, Session.id == SessionSpeaker.session_id)
+                .join(Speaker, SessionSpeaker.speaker_id == Speaker.id)
                 .filter(EventModel.status == "PUBLISHED")
                 .order_by(
                     EventModel.start_date.desc(),
@@ -119,8 +119,16 @@ class EventImplement(EventRepository):
                 .limit(limit)
             )
             
-            # Contar total
-            total_query = self.session.query(func.count(EventModel.id)).filter(EventModel.status == "PUBLISHED")
+            # Contar total de eventos únicos que cumplen los criterios
+            total_query = (
+                self.session.query(func.count(func.distinct(EventModel.id)))
+                .select_from(EventModel)
+                .join(Session, EventModel.id == Session.event_id)
+                .join(TimeSlot, Session.time_slot_id == TimeSlot.id)
+                .join(SessionSpeaker, Session.id == SessionSpeaker.session_id)
+                .join(Speaker, SessionSpeaker.speaker_id == Speaker.id)
+                .filter(EventModel.status == "PUBLISHED")
+            )
             total = total_query.scalar()
             
             # Ejecutar
@@ -325,7 +333,7 @@ class EventImplement(EventRepository):
             data = (self.session.query(EventModel).outerjoin(TimeSlot)
                     .options(load_only(EventModel.id,
                                        EventModel.title),
-                        orm.selectinload(EventModel.time_slot).load_only(
+                        orm.selectinload(EventModel.time_slots).load_only(
                             TimeSlot.id,
                             TimeSlot.start_time,
                             TimeSlot.end_time
@@ -333,7 +341,7 @@ class EventImplement(EventRepository):
                     )
                     .distinct()
                     )
-                                                            
+                                            
             return [
                 EventSlotResponse(
                     id=event.id,
@@ -344,7 +352,7 @@ class EventImplement(EventRepository):
                             start_time=slot.start_time,
                             end_time=slot.end_time
                         )
-                        for slot in event.time_slot
+                        for slot in event.time_slots
                     ]
                 )
                 for event in data

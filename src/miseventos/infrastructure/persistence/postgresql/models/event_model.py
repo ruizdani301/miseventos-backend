@@ -27,6 +27,24 @@ class Event(SQLModel, table=True):
 
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-    session: List["Session"] = Relationship(back_populates="event")
-    time_slot: List["TimeSlot"] = Relationship(back_populates="event")
-    registrations: List["EventRegistration"] = Relationship(back_populates="event")
+    session: List["Session"] = Relationship(
+        back_populates="event",
+        sa_relationship_kwargs={
+            "cascade": "all, delete-orphan",
+            "passive_deletes": True
+        }
+    )
+    time_slots: List["TimeSlot"] = Relationship(
+        back_populates="event",
+        sa_relationship_kwargs={
+            "cascade": "delete, delete-orphan",
+            "passive_deletes": True
+        }
+    )
+    registrations: List["EventRegistration"] = Relationship(
+        back_populates="event",
+        sa_relationship_kwargs={
+            "cascade": "all, delete-orphan",
+            "passive_deletes": True
+        }
+    )

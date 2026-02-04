@@ -26,3 +26,26 @@ class UserEmailResponse(SQLModel):
     email: str
     success: bool
     error_message: Optional[str] = None
+
+
+class LoginRequest(SQLModel):
+    email: str
+    password: str
+
+
+class LoginTokenResponse(SQLModel):
+    success: bool
+    error_message: Optional[str] = None
+    user_id: UUID | None = None
+    email: str | None = None
+    role: str | None = None
+    access_token: str | None = None
+
+class LoginResponse(SQLModel):
+    success: bool
+    error_message: Optional[str] = None
+    user_id: UUID
+    email: str
+    role: str
+
+

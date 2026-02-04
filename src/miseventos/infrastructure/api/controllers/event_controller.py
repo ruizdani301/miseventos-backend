@@ -78,6 +78,7 @@ def get_all_events_controller(usecase: EventUseCase):
 def get_events_slot_controller(usecase: EventUseCase):
     async def controller()-> EventSlotRelationResponse:
         response = usecase.get_event_slot()
+        print(response)
         if not response.success:
             raise HTTPException(status_code=400, detail=response.error_message)
 

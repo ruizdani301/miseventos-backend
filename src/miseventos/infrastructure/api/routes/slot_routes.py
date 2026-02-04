@@ -26,7 +26,7 @@ def register_slotcase(db: Session = Depends(get_db)):
     return SlotUseCase(repo)  # instancia de UserUseCase con el con user implement
 
 
-slot_router = APIRouter()
+slot_router = APIRouter(tags=["Intervalos de tiempo"])
 
 
 @slot_router.post("/slot/")

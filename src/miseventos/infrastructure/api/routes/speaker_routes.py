@@ -28,7 +28,7 @@ def register_speakercase(db: Session = Depends(get_db)):
     return SpeakerUseCase(repo)
 
 
-speaker_router = APIRouter()
+speaker_router = APIRouter(tags=["Oradores"])
 
 
 @speaker_router.post("/speaker/")

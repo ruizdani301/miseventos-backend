@@ -49,8 +49,10 @@ def update_session_controller(usecase: SessionUseCase):
     return controller
 
 def get_sessions_controller(usecase: SessionUseCase):
+
     async def controller() -> SessionResponse:
         response = usecase.get_sessions()
+
         if not response.success:
             raise HTTPException(status_code=404, detail=response.error_message)
         return response

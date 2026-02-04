@@ -21,10 +21,10 @@ def register_usecase(db: Session = Depends(get_db)):
     )  
     return UserUseCase(repo)  
 
-user_router = APIRouter()
+user_router = APIRouter(tags=["Usuarios"])
 
 
-@user_router.post("/register")
+@user_router.post("/user/register")
 async def register_user(
     body: UserRequest, usecase: UserUseCase = Depends(register_usecase)
 ):

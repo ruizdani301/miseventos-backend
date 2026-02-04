@@ -29,7 +29,11 @@ class UserImplement(UserRepository):
         try:
             user_model = self.session.query(userModel).filter_by(email=useremail).first()
             if user_model:
-                return UserEntity(id=user_model.id, email=user_model.email)
+                return UserEntity(
+                    id=user_model.id,
+                    email=user_model.email,
+                    password=user_model.password_hash
+                )
             return None
         except Exception as e:
             raise e

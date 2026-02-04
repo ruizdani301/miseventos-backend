@@ -24,7 +24,7 @@ def register_sessioncase(db: Session = Depends(get_db)):
     return SessionUseCase(repo)
 
 
-session_router = APIRouter()
+session_router = APIRouter(tags=["Sesiones"])
 
 
 @session_router.post("/session/")

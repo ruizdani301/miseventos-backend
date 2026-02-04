@@ -122,7 +122,6 @@ class EventUseCase:
 
     def get_event_slot(self)-> EventSlotRelationResponse:
         event_slot = self.event_implement.get_event_slot_relation()
-        
         if not event_slot:
             return EventSlotRelationResponse(success=False, error_message= "No data available", events=None)
         

@@ -27,7 +27,7 @@ def register_eventcase(db: Session = Depends(get_db)):
     return EventUseCase(repo)
 
 
-event_router = APIRouter()
+event_router = APIRouter(tags=["Eventos"])
 
 
 @event_router.post("/event/")
@@ -51,7 +51,7 @@ async def get_event_by_title(
     return await response(title)
 
 
-@event_router.get("/events/")
+@event_router.get("/event/")
 async def get_all_events(
     page: int = 1, limit: int = 10, usecase: EventUseCase = Depends(register_eventcase)
 ):

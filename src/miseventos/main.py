@@ -12,7 +12,9 @@ from miseventos.infrastructure.api.routes.session_routes import session_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from miseventos.infrastructure.api.routes.speaker_routes import speaker_router
-
+from miseventos.infrastructure.api.routes.login import login_router
+from miseventos.infrastructure.api.routes.logout import logout_router
+from miseventos.infrastructure.api.routes.session_register_routes import session_register_router
 create_tables()
 
 
@@ -28,12 +30,16 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],  # Permite todos los métodos (GET, POST, etc.)
     allow_headers=["*"],  # Permite todos los headers
+    expose_headers=["*"],
 )
 app.include_router(router=user_router, prefix="/api/v1")
 app.include_router(router=event_router, prefix="/api/v1")
 app.include_router(router=slot_router, prefix="/api/v1")
 app.include_router(router=session_router, prefix="/api/v1")
 app.include_router(router=speaker_router, prefix="/api/v1")
+app.include_router(router=login_router, prefix="/api/v1")
+app.include_router(router=logout_router, prefix="/api/v1")
+app.include_router(router=session_register_router, prefix="/api/v1")
 
 
 @app.get("/")
