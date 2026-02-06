@@ -16,7 +16,7 @@ class EventRepository(ABC):
 
 
     @abstractmethod
-    def get_events_paginated(self, page: int, limit: int) -> List[EventEntity] | None:
+    def get_events_paginated(self, page: int, limit: int, user_id: UUID = None) -> List[EventEntity] | None:
         pass
 
     @abstractmethod

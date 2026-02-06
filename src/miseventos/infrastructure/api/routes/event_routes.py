@@ -20,6 +20,7 @@ from uuid import UUID
 from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import (
     EventRequest,EventUpdateRequest
 )
+from token_jwt.jwt_handler import get_current_user
 
 
 def register_eventcase(db: Session = Depends(get_db)):
@@ -53,11 +54,15 @@ async def get_event_by_title(
 
 @event_router.get("/event/")
 async def get_all_events(
-    page: int = 1, limit: int = 10, usecase: EventUseCase = Depends(register_eventcase)
+    page: int = 1, 
+    limit: int = 10, 
+    usecase: EventUseCase = Depends(register_eventcase),
+    current_user: dict = Depends(get_current_user)
 ):
     """Obtiene una lista paginada de todos los eventos."""
+    user_id = UUID(current_user.get("user_id"))
     response = all_events_controller(usecase)
-    return await response(page, limit)
+    return await response(page, limit, user_id)
 
 
 @event_router.delete("/event/{event_id}")

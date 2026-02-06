@@ -5,13 +5,17 @@ from miseventos.infrastructure.persistence.postgresql.implement.event_implemet i
 from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import (
     EventRequest,
     EventSlotRelationResponse,
-    EventNotSlotsResponse
+    EventNotSlotsResponse,
+    EventsCompletedResponse,
+    EventRespose,
+    EventUpdateRequest
+
 )
 from miseventos.entitis.event import EventEntity
 from uuid import UUID
-from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import (
-    EventRespose, EventsCompletedResponse, EventUpdateRequest
-)
+# from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import (
+#     EventRespose, EventUpdateRequest
+# )
 from miseventos.infrastructure.persistence.postgresql.schemas.schema import Response
 
 
@@ -51,19 +55,21 @@ class EventUseCase:
 
         return Response(success=True, error_message=None, event=event_saved)
 
-    def get_event_paginated(self, page: int, limit: int) -> EventsCompletedResponse:
-        events = self.event_implement.get_events_paginated(page=page, limit=limit)
+
+    def get_event_paginated(self, page: int, limit: int, user_id: UUID = None) -> EventsCompletedResponse:
+        events = self.event_implement.get_events_paginated(page=page, limit=limit, user_id=user_id)
 
         if not events:
-            return EventsCompletedResponse(success=False, error_message="not events found.")
+            return EventsCompletedResponse(success=False, error_message="not events found.", events=None)
+        print(events)
         return EventsCompletedResponse(success=True,
-                                       events=events["data"],
-                                       total=events["total"],
-                                       page=events["page"],
-                                       total_pages=events["total_pages"],
-                                       page_size=events["page_size"],
-                                       error_message=None)
-
+                                            total=events["total"],
+                                            page=events["page"],
+                                            total_pages=events["total_pages"],
+                                            page_size=events["page_size"],
+                                            events=events["data"], 
+                                            error_message=None)
+      
     def get_event_by_title(self, title: str) -> EventRespose:
         event = self.event_implement.get_event_by_title(title)
         if not event:

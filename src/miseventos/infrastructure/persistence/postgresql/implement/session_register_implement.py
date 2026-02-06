@@ -64,6 +64,7 @@ class SessionRegisterImplement(SessionRegisterRepository):
                 )
                 self.session.add(event_registration)
                 self.session.flush()
+            event_registration_id = event_registration.id
 
             existing_session_reg = self.session.query(SessionRegistration).filter(
                 and_(
@@ -108,6 +109,7 @@ class SessionRegisterImplement(SessionRegisterRepository):
             
             return registerResponse(
                 id=str(session_registration_id),
+                event_registration_id=str(event_registration_id),
                 session_id=str(body.session_id),
                 event_id=str(body.event_id),
                 number_registered=session_reg_count,

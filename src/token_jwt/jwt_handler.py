@@ -23,7 +23,6 @@ def validate_token(token: str) -> dict:
     """Valida y decodifica un token JWT"""
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        print(payload)
         return payload
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expirado")
@@ -35,8 +34,6 @@ def validate_token(token: str) -> dict:
 def get_current_user(request: Request):
     """Extrae y valida el token de las cookies"""
     token = request.cookies.get("auth_token")
-    print("token")
-    print(token)
     
     if not token:
         raise HTTPException(status_code=401, detail="No autenticado")

@@ -16,17 +16,22 @@ class EventData(SQLModel):
     capacity: int
     status: EventStatus
     created_at: Optional[datetime] = None
+    registrations_count: int | None = None
 
-class EventRequest(SQLModel):
+
+class ResponseNestedSession(SQLModel):
+    id: Optional[str] | UUID
     title: str
     description: Optional[str] = None
-    start_date: datetime
-    end_date: datetime
-    capacity: int = Field(..., gt=0)
-    status: EventStatus = EventStatus.PUBLISHED
+    created_at: datetime
+    event_id: UUID
+    capacity: int
+    time_slot_id: Optional[UUID]
+    registrations_count: int | None = None
+    user_registration_id: Optional[str] | UUID = None
 
 class SessionNestedResponse(SQLModel):
-    session: ResponseSession
+    session: ResponseNestedSession
     time_slot: SlotResponse
     speakers: List[ResponseSpeaker]
 
@@ -42,6 +47,19 @@ class EventsCompletedResponse(SQLModel):
     page_size: int | None
     total_pages: int | None
     events:List[EventNestedResponse] | None
+
+class EventNestedCompletedResponse(SQLModel):
+    success:bool
+    error_message: str | None
+    events:EventsCompletedResponse | None
+
+class EventRequest(SQLModel):
+    title: str
+    description: Optional[str] = None
+    start_date: datetime
+    end_date: datetime
+    capacity: int = Field(..., gt=0)
+    status: EventStatus = EventStatus.PUBLISHED
 
 class EventUpdateRequest(SQLModel):
     id: Optional[str] | UUID = None

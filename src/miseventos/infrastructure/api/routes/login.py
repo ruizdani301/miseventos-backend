@@ -19,18 +19,6 @@ async def login(
 ):
     """Acceso de usuario y generación de token JWT."""
     
-    # request = Request
-    # Opción 3: Hacerlo dinámico
-    # host = request.headers.get("host", "")
-    # if "localhost" in host:
-    #     domain = "localhost"
-    #     print(domain)
-    # elif "127.0.0.1" in host:
-    #     domain = "127.0.0.1"
-    #     print(domain)
-    # else:
-    #     domain = None
-    #     print(domain)
     response_controller = login_controller(usecase)
     response_controller = await response_controller(body)
     
@@ -43,7 +31,7 @@ async def login(
             httponly=True,              
             secure=False,                
             samesite="lax",             
-            max_age=24 * 60 * 60,       # 24 horas en segundos
+            max_age=24 * 60 * 60,
             path="/",
             domain="127.0.0.1",
         )

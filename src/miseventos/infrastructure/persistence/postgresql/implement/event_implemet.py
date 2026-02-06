@@ -4,11 +4,14 @@ from sqlalchemy import orm, func
 from miseventos.infrastructure.persistence.postgresql.models.event_model import (
     Event as EventModel,
 )
+from miseventos.infrastructure.persistence.postgresql.models.event_registration_model import EventRegistration
+from miseventos.infrastructure.persistence.postgresql.models.session_registration_model import SessionRegistration
 from sqlalchemy.orm import load_only
 from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import (
     EventSlotResponse,
     NewTimeRange,
-    EventWithOutResponse)
+    EventWithOutResponse,
+    EventsCompletedResponse)
 from miseventos.infrastructure.persistence.postgresql.models.session_model import Session
 from miseventos.infrastructure.persistence.postgresql.models.time_model import TimeSlot
 from miseventos.infrastructure.persistence.postgresql.models.speaker_model import Speaker
@@ -83,109 +86,130 @@ class EventImplement(EventRepository):
             raise e
 
 
-
-    def get_events_paginated(
-        self, page: int = 1, limit: int = 10
-    ):
+    def get_events_paginated(self, page: int = 1, limit: int = 10, user_id: UUID = None) -> EventsCompletedResponse:
         try:
-        
             offset = (page - 1) * limit
 
-            #event_models = self.session.query(EventModel).offset(offset).limit(limit).all()
-            # Calcular offset
-        
-        
-            # Query principal
+            # 1. Subconsultas para los contadores (Correlated Subqueries)
+            event_count_sub = (
+                self.session.query(func.count(EventRegistration.id))
+                .filter(EventRegistration.event_id == EventModel.id)
+                .correlate(EventModel)
+                .as_scalar()
+                .label("event_reg_count")
+            )
+
+            session_count_sub = (
+                self.session.query(func.count(SessionRegistration.id))
+                .filter(SessionRegistration.session_id == Session.id)
+                .correlate(Session)
+                .as_scalar()
+                .label("session_reg_count")
+            )
+
+            # 2. Query Principal con Joins estrictos (Inner Joins)
+            # Esto filtra automáticamente eventos sin sesiones y sesiones sin speakers
             query = (
                 self.session.query(
                     EventModel,
                     Session,
                     TimeSlot,
-                    Speaker
+                    Speaker,
+                    event_count_sub,
+                    session_count_sub,
+                    SessionRegistration.id
                 )
-                .select_from(EventModel)
                 .join(Session, EventModel.id == Session.event_id)
                 .join(TimeSlot, Session.time_slot_id == TimeSlot.id)
                 .join(SessionSpeaker, Session.id == SessionSpeaker.session_id)
                 .join(Speaker, SessionSpeaker.speaker_id == Speaker.id)
+                .outerjoin(
+                    SessionRegistration, 
+                    (SessionRegistration.session_id == Session.id) & 
+                    (SessionRegistration.user_id == user_id) if user_id else SessionRegistration.session_id == Session.id
+                )
                 .filter(EventModel.status == "PUBLISHED")
                 .order_by(
                     EventModel.start_date.desc(),
                     TimeSlot.start_time.asc().nulls_first(),
-                    Session.title.asc().nulls_first(),
-                    Speaker.full_name.asc().nulls_first()
+                    Session.title.asc(),
+                    Speaker.full_name.asc()
                 )
                 .offset(offset)
                 .limit(limit)
             )
             
-            # Contar total de eventos únicos que cumplen los criterios
-            total_query = (
-                self.session.query(func.count(func.distinct(EventModel.id)))
-                .select_from(EventModel)
-                .join(Session, EventModel.id == Session.event_id)
-                .join(TimeSlot, Session.time_slot_id == TimeSlot.id)
-                .join(SessionSpeaker, Session.id == SessionSpeaker.session_id)
-                .join(Speaker, SessionSpeaker.speaker_id == Speaker.id)
-                .filter(EventModel.status == "PUBLISHED")
-            )
-            total = total_query.scalar()
+            # 3. Contar total de eventos únicos (siguiendo la misma lógica de joins)
+            total = self.session.query(func.count(func.distinct(EventModel.id)))\
+                .join(Session, EventModel.id == Session.event_id)\
+                .join(SessionSpeaker, Session.id == SessionSpeaker.session_id)\
+                .filter(EventModel.status == "PUBLISHED")\
+                .scalar() or 0
             
-            # Ejecutar
             results = query.all()
 
-            # Procesar resultados
+            # 4. Procesamiento de Resultados
             events_dict = {}
-            for event, session_obj, time_slot, speaker in results:
+            for event, session_obj, time_slot, speaker, ev_count, sess_count, user_reg_id in results:
                 event_id = str(event.id)
                 
                 if event_id not in events_dict:
+                    # Creamos el diccionario del evento inyectando el contador
+                    event_info = event.model_dump() if hasattr(event, 'model_dump') else event.__dict__.copy()
+                    event_info["registrations_count"] = ev_count or 0
+                    
                     events_dict[event_id] = {
-                        "event": event,
+                        "event": event_info,
                         "sessions": {}
                     }
                 
-                # Si hay sesión
-                if session_obj:
-                    session_id = str(session_obj.id)
-                    if session_id not in events_dict[event_id]["sessions"]:
-                        events_dict[event_id]["sessions"][session_id] = {
-                            "session": session_obj,
-                            "time_slot": time_slot,
-                            "speakers": []
-                        }
+                session_id = str(session_obj.id)
+                if session_id not in events_dict[event_id]["sessions"]:
+                    # Creamos el diccionario de la sesión inyectando el contador
+                    session_info = session_obj.model_dump() if hasattr(session_obj, 'model_dump') else session_obj.__dict__.copy()
+                    session_info["registrations_count"] = sess_count or 0
+                    session_info["user_registration_id"] = str(user_reg_id) if user_reg_id else None
                     
-                    # Si hay speaker, añadirlo a la sesión
-                    if speaker:
-                        events_dict[event_id]["sessions"][session_id]["speakers"].append(speaker)
-            
-            # Convertir a lista
-            processed_results = []
-            for event_data in events_dict.values():
-                sessions_list = []
-                for session_data in event_data["sessions"].values():
-                    sessions_list.append({
-                        "session": session_data["session"],
-                        "time_slot": session_data["time_slot"],
-                        "speakers": session_data["speakers"]
-                    })
+                    events_dict[event_id]["sessions"][session_id] = {
+                        "session": session_info,
+                        "time_slot": time_slot,
+                        "speakers": []
+                    }
                 
-                processed_results.append({
-                    "event": event_data["event"],
+                # Añadir speaker (ya garantizado por el join)
+                events_dict[event_id]["sessions"][session_id]["speakers"].append(speaker)
+            
+            # 5. Formatear a lista para el JSON final
+            processed_events = []
+            for e_data in events_dict.values():
+                sessions_list = []
+                for s_data in e_data["sessions"].values():
+                    sessions_list.append(s_data)
+                
+                processed_events.append({
+                    "event": e_data["event"],
                     "sessions": sessions_list
                 })
 
             return {
-                "data": processed_results,
+                "success": True,
+                "error_message": None,
                 "total": total,
                 "page": page,
                 "page_size": limit,
-                "total_pages": (total + limit - 1) // limit
+                "total_pages": (total + limit - 1) // limit if total > 0 else 0,
+                "data": processed_events
             }
-        except:
-            self.session.rollback()
-            return None
 
+        except Exception as e:
+            self.session.rollback()
+            return {
+                "success": False, 
+                "error_message": str(e), 
+                "total": 0, 
+                "data": []
+            }
+   
     def get_event_by_title(self, event_title: str) -> List[EventEntity]:
         """
             Para get_event_by_title

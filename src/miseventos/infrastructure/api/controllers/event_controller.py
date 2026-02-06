@@ -34,8 +34,8 @@ def find_by_title_controller(usecase: EventUseCase):
 
 
 def all_events_controller(usecase: EventUseCase):
-    async def controller(page: int, limit: int)-> List[EventsCompletedResponse]:
-        response = usecase.get_event_paginated(page=page, limit=limit)
+    async def controller(page: int, limit: int, user_id: UUID = None)-> List[EventsCompletedResponse]:
+        response = usecase.get_event_paginated(page=page, limit=limit, user_id=user_id)
         if not response.success:
             raise HTTPException(status_code=400, detail=response.error_message)
         return response

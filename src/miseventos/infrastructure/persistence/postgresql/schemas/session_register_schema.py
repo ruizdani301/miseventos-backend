@@ -10,6 +10,7 @@ class SessionRegisterRequest(SQLModel):
 
 class registerResponse(SQLModel):
     id: Optional[str] | UUID = None
+    event_registration_id: Optional[str] | UUID = None
     event_id: UUID | None = None
     session_id: UUID | None = None
     number_registered: int | None = None
