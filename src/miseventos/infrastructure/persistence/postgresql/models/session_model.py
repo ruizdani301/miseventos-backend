@@ -26,9 +26,7 @@ class Session(SQLModel, table=True):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     event_id: UUID = Field(
-        sa_column=Column(
-            ForeignKey("events.id", ondelete="CASCADE"), index=True
-        )
+        sa_column=Column(ForeignKey("events.id", ondelete="CASCADE"), index=True)
     )
 
     time_slot_id: UUID = Field(
@@ -40,15 +38,14 @@ class Session(SQLModel, table=True):
     event: Optional["Event"] = Relationship(back_populates="session")
     time_slot: Optional["TimeSlot"] = Relationship(back_populates="session")
 
-    session_speakers: List["SessionSpeaker"] = Relationship(back_populates="session",
-                                                            sa_relationship_kwargs={
-                                                                "cascade": "all, delete",
-                                                                "passive_deletes": True
-                                                            })
+    session_speakers: List["SessionSpeaker"] = Relationship(
+        back_populates="session",
+        sa_relationship_kwargs={"cascade": "all, delete", "passive_deletes": True},
+    )
     registrations: List["SessionRegistration"] = Relationship(
         back_populates="session",
         sa_relationship_kwargs={
             "cascade": "all, delete-orphan",
-            "passive_deletes": True
-        }
+            "passive_deletes": True,
+        },
     )

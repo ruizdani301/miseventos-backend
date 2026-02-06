@@ -4,8 +4,12 @@ from uuid import UUID
 from typing import List
 from miseventos.infrastructure.persistence.postgresql.schemas.schema import Response
 from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import (
-    GetSlotsEventResponse,SlotUpdateRequest, SlotGroupResponse, SlotGroupUpdate
-) 
+    GetSlotsEventResponse,
+    SlotUpdateRequest,
+    SlotGroupResponse,
+    SlotGroupUpdate,
+)
+
 
 class SlotRepository(ABC):
     @abstractmethod

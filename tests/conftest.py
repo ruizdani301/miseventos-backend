@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from miseventos.infrastructure.persistence.postgresql.models.database import Base
 
+
 @pytest.fixture
 def db_session():
     engine = create_engine("sqlite:///:memory:")

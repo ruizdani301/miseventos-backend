@@ -7,15 +7,17 @@ from miseventos.infrastructure.persistence.postgresql.schemas.event_schema impor
     EventRespose,
     EventsCompletedResponse,
     EventRequest,
-    EventUpdateRequest,EventSlotRelationResponse, EventNotSlotsResponse
+    EventUpdateRequest,
+    EventSlotRelationResponse,
+    EventNotSlotsResponse,
 )
 
 
 def add_event_controller(usecase: EventUseCase):
     async def controller(body: EventRequest) -> EventRespose:
-    
+
         response = usecase.save_event(body)
-        
+
         if not response.success:
             raise HTTPException(status_code=400, detail=response.error_message)
         return response
@@ -34,8 +36,12 @@ def find_by_title_controller(usecase: EventUseCase):
 
 
 def all_events_controller(usecase: EventUseCase):
-    async def controller(page: int, limit: int, user_id: UUID = None)-> List[EventsCompletedResponse]:
-        response = usecase.get_event_paginated(page=page, limit=limit, user_id=user_id)
+    async def controller(
+        page: int, limit: int, user_id: UUID = None, title: str = None
+    ) -> List[EventsCompletedResponse]:
+        response = usecase.get_event_paginated(
+            page=page, limit=limit, user_id=user_id, title=title
+        )
         if not response.success:
             raise HTTPException(status_code=400, detail=response.error_message)
         return response
@@ -52,22 +58,21 @@ def delete_event_controller(usecase: EventUseCase):
 
     return controller
 
+
 def update_event_controller(usecase: EventUseCase):
     async def controller(body: EventUpdateRequest):
         response = usecase.update_event(body)
 
         if not response.success:
-            raise HTTPException(
-                status_code=400,
-                detail=response.error_message
-            )
+            raise HTTPException(status_code=400, detail=response.error_message)
 
         return response
 
     return controller
 
+
 def get_all_events_controller(usecase: EventUseCase):
-    async def controller(page: int, limit: int)-> EventRespose:
+    async def controller(page: int, limit: int) -> EventRespose:
         response = usecase.get_events_all(page=page, limit=limit)
         if not response.success:
             raise HTTPException(status_code=400, detail=response.error_message)
@@ -75,23 +80,22 @@ def get_all_events_controller(usecase: EventUseCase):
 
     return controller
 
+
 def get_events_slot_controller(usecase: EventUseCase):
-    async def controller()-> EventSlotRelationResponse:
+    async def controller() -> EventSlotRelationResponse:
         response = usecase.get_event_slot()
-        print(response)
         if not response.success:
             raise HTTPException(status_code=400, detail=response.error_message)
-
         return response
 
     return controller
 
+
 def get_events_not_slot_controller(usecase: EventUseCase):
-    async def controller()-> EventNotSlotsResponse:
+    async def controller() -> EventNotSlotsResponse:
         response = usecase.get_event_not_in_slot()
         if not response.success:
             raise HTTPException(status_code=400, detail=response.error_message)
-     
         return response
 
     return controller

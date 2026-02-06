@@ -31,20 +31,20 @@ class Event(SQLModel, table=True):
         back_populates="event",
         sa_relationship_kwargs={
             "cascade": "all, delete-orphan",
-            "passive_deletes": True
-        }
+            "passive_deletes": True,
+        },
     )
     time_slots: List["TimeSlot"] = Relationship(
         back_populates="event",
         sa_relationship_kwargs={
             "cascade": "delete, delete-orphan",
-            "passive_deletes": True
-        }
+            "passive_deletes": True,
+        },
     )
     registrations: List["EventRegistration"] = Relationship(
         back_populates="event",
         sa_relationship_kwargs={
             "cascade": "all, delete-orphan",
-            "passive_deletes": True
-        }
+            "passive_deletes": True,
+        },
     )

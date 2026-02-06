@@ -3,7 +3,7 @@ from miseventos.infrastructure.persistence.postgresql.schemas.session_schema imp
     SessionRequest,
     SessionResponse,
     SessionDeleteResponse,
-    SessionUpdateRequest
+    SessionUpdateRequest,
 )
 from fastapi import HTTPException
 from uuid import UUID
@@ -47,6 +47,7 @@ def update_session_controller(usecase: SessionUseCase):
         return response
 
     return controller
+
 
 def get_sessions_controller(usecase: SessionUseCase):
 

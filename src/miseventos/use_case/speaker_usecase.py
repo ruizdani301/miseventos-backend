@@ -6,7 +6,7 @@ from miseventos.infrastructure.persistence.postgresql.schemas.speaker_schema imp
     SpeakerResponse,
     SpeakerDeleteResponse,
     SpeakerEventResponse,
-    SpeakerUpdateRequest
+    SpeakerUpdateRequest,
 )
 from miseventos.entitis.speaker import SpeakerEntity
 
@@ -51,8 +51,10 @@ class SpeakerUseCase:
         return SpeakerResponse(
             success=True, error_message=None, speaker=updated_speaker
         )
-    
-    def get_speakers(self,) -> SpeakerResponse | None:
+
+    def get_speakers(
+        self,
+    ) -> SpeakerResponse | None:
         data_speaker = self.speaker_implement.get_speaker()
         if not data_speaker:
             return SpeakerResponse(

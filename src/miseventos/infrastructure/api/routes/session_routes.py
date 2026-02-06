@@ -10,12 +10,14 @@ from miseventos.infrastructure.api.controllers.session_controller import (
     get_sessions_by_event_id_controller,
     delete_session_controller,
     update_session_controller,
-    get_sessions_controller
+    get_sessions_controller,
 )
 from uuid import UUID
 from miseventos.infrastructure.persistence.postgresql.schemas.session_schema import (
-    SessionRequest, SessionUpdateRequest
+    SessionRequest,
+    SessionUpdateRequest,
 )
+from token_jwt.jwt_handler import get_current_user
 from uuid import UUID
 
 
@@ -29,7 +31,9 @@ session_router = APIRouter(tags=["Sesiones"])
 
 @session_router.post("/session/")
 async def register_session(
-    body: SessionRequest, usecase: SessionUseCase = Depends(register_sessioncase)
+    body: SessionRequest,
+    usecase: SessionUseCase = Depends(register_sessioncase),
+    current_user: dict = Depends(get_current_user),
 ):
     """Registra una nueva sesión en un evento."""
     response = create_session_controller(usecase)
@@ -38,7 +42,9 @@ async def register_session(
 
 @session_router.get("/session/{event_id}")
 async def get_sessions_by_event_id(
-    event_id: UUID, usecase: SessionUseCase = Depends(register_sessioncase)
+    event_id: UUID,
+    usecase: SessionUseCase = Depends(register_sessioncase),
+    current_user: dict = Depends(get_current_user),
 ):
     """Obtiene todas las sesiones asociadas a un ID de evento."""
     response = get_sessions_by_event_id_controller(usecase)
@@ -47,22 +53,30 @@ async def get_sessions_by_event_id(
 
 @session_router.delete("/session/{session_id}")
 async def delete_session(
-    session_id: UUID, usecase: SessionUseCase = Depends(register_sessioncase)
+    session_id: UUID,
+    usecase: SessionUseCase = Depends(register_sessioncase),
+    current_user: dict = Depends(get_current_user),
 ):
     """Elimina una sesión por su ID."""
     response = delete_session_controller(usecase)
     return await response(session_id)
 
+
 @session_router.put("/session/")
-async def update_session(body: SessionUpdateRequest, usecase: SessionUseCase = Depends(register_sessioncase)): 
+async def update_session(
+    body: SessionUpdateRequest,
+    usecase: SessionUseCase = Depends(register_sessioncase),
+    current_user: dict = Depends(get_current_user),
+):
     """Actualiza la información de una sesión existente."""
-    print(body)
     response = update_session_controller(usecase)
     return await response(body)
 
+
 @session_router.get("/session/")
 async def get_sessions(
-    usecase: SessionUseCase = Depends(register_sessioncase)
+    usecase: SessionUseCase = Depends(register_sessioncase),
+    current_user: dict = Depends(get_current_user),
 ):
     """Obtiene una lista de todas las sesiones."""
     response = get_sessions_controller(usecase)

@@ -3,8 +3,9 @@ from uuid import UUID
 from typing import List
 from miseventos.entitis.speaker import SpeakerEntity
 from miseventos.infrastructure.persistence.postgresql.schemas.speaker_schema import (
-     ResponseSimpleSpeaker,
-     SpeakerUpdateRequest)
+    ResponseSimpleSpeaker,
+    SpeakerUpdateRequest,
+)
 
 
 class SpeakerRepository(ABC):
@@ -25,5 +26,7 @@ class SpeakerRepository(ABC):
         pass
 
     @abstractmethod
-    def get_speaker(self,) -> List[SpeakerEntity] | None:
-            pass
+    def get_speaker(
+        self,
+    ) -> List[SpeakerEntity] | None:
+        pass

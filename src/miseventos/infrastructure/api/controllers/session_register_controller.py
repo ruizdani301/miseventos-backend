@@ -3,7 +3,7 @@ from miseventos.infrastructure.persistence.postgresql.schemas.session_register_s
     SessionRegisterRequest,
     SessionRegisterResponse,
     SessionDeleteResponse,
-    SessionRegisterDeleteRequest
+    SessionRegisterDeleteRequest,
 )
 from miseventos.use_case.session_register_usecase import SessionRegisterUseCase
 from fastapi import HTTPException

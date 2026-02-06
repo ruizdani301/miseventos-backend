@@ -8,11 +8,17 @@ from miseventos.infrastructure.persistence.postgresql.models.session_model impor
 )
 from fastapi import HTTPException, status
 
-from miseventos.infrastructure.persistence.postgresql.models.session_speaker_model import SessionSpeaker
+from miseventos.infrastructure.persistence.postgresql.models.session_speaker_model import (
+    SessionSpeaker,
+)
 from miseventos.infrastructure.persistence.postgresql.schemas.session_schema import (
     SessionRequest,
-    SessionUpdateRequest)
-from miseventos.infrastructure.persistence.postgresql.models.speaker_model import Speaker
+    SessionUpdateRequest,
+)
+from miseventos.infrastructure.persistence.postgresql.models.speaker_model import (
+    Speaker,
+)
+
 
 class SessionImplement(SessionRepository):
     def __init__(self, session: orm.Session):
@@ -24,15 +30,13 @@ class SessionImplement(SessionRepository):
             speaker_id = UUID(body.speaker_id)
 
             speaker = (
-                self.session.query(Speaker)
-                .filter(Speaker.id == speaker_id)
-                .first()
+                self.session.query(Speaker).filter(Speaker.id == speaker_id).first()
             )
 
             if not speaker:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Speaker no encontrado"
+                    detail="Speaker no encontrado",
                 )
 
             new_session_model = SessionModel(
@@ -44,8 +48,7 @@ class SessionImplement(SessionRepository):
             )
 
             self.session.add(new_session_model)
-            self.session.flush()  
-
+            self.session.flush()
 
             new_session_model.session_speakers.append(
                 SessionSpeaker(speaker_id=speaker_id)
@@ -59,10 +62,8 @@ class SessionImplement(SessionRepository):
             self.session.rollback()
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Error creando la sesión"
+                detail="Error creando la sesión",
             )
-
-
 
     def get_session_by_event_id(self, event_id: UUID) -> List[SessionEntity] | None:
         try:
@@ -91,7 +92,9 @@ class SessionImplement(SessionRepository):
     def delete_session(self, body_id: UUID) -> UUID:
         try:
             session_model = (
-                self.session.query(SessionModel).filter(SessionModel.id == body_id).first()
+                self.session.query(SessionModel)
+                .filter(SessionModel.id == body_id)
+                .first()
             )
             if session_model:
                 self.session.delete(session_model)
@@ -103,31 +106,25 @@ class SessionImplement(SessionRepository):
             raise e
 
     def update_session(self, body: SessionUpdateRequest) -> SessionModel:
-        
+
         session_model = (
-            self.session.query(SessionModel)
-            .filter(SessionModel.id == body.id)
-            .first()
+            self.session.query(SessionModel).filter(SessionModel.id == body.id).first()
         )
 
         if not session_model:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Session no encontrada"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Session no encontrada"
             )
 
         new_speaker_id = UUID(body.speaker_id)
 
         speaker = (
-            self.session.query(Speaker)
-            .filter(Speaker.id == new_speaker_id)
-            .first()
+            self.session.query(Speaker).filter(Speaker.id == new_speaker_id).first()
         )
 
         if not speaker:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Speaker no encontrado"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Speaker no encontrado"
             )
 
         session_model.title = body.title
@@ -154,14 +151,10 @@ class SessionImplement(SessionRepository):
         except Exception as e:
             self.session.rollback()
             raise e
-        
 
     def get_sessions(self) -> List[SessionEntity] | None:
         try:
-            sessions_models = (
-                self.session.query(SessionModel)
-                .all()
-            )
+            sessions_models = self.session.query(SessionModel).all()
             if sessions_models:
                 return [
                     SessionEntity(

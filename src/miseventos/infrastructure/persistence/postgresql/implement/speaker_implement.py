@@ -14,7 +14,7 @@ from miseventos.infrastructure.persistence.postgresql.models.session_model impor
 )
 from miseventos.infrastructure.persistence.postgresql.schemas.speaker_schema import (
     ResponseSimpleSpeaker,
-    SpeakerUpdateRequest
+    SpeakerUpdateRequest,
 )
 
 
@@ -32,9 +32,9 @@ class SpeakerImplement(SpeakerRepository):
             self._session.refresh(new_speaker_model)
             return ResponseSimpleSpeaker(
                 id=str(new_speaker_model.id),
-                #full_name=new_speaker_model.full_name,
-                #bio=new_speaker_model.bio,
-                #email=new_speaker_model.email,
+                # full_name=new_speaker_model.full_name,
+                # bio=new_speaker_model.bio,
+                # email=new_speaker_model.email,
                 created_at=new_speaker_model.created_at,
             )
         except Exception as e:
@@ -114,24 +114,26 @@ class SpeakerImplement(SpeakerRepository):
         except Exception as e:
             self._session.rollback()
             raise e
-    
 
-    def get_speaker(self,) -> List[SpeakerEntity] | None:
-        try: 
+    def get_speaker(
+        self,
+    ) -> List[SpeakerEntity] | None:
+        try:
             speaker_model = (
                 self._session.query(SpeakerModel)
                 .order_by(SpeakerModel.full_name.desc())
                 .all()
             )
-            return [SpeakerEntity(
-                id=speaker.id,
-                email=speaker.email,
-                full_name = speaker.full_name,
-                bio=speaker.bio,
-                created_at=speaker.created_at
-            )
-                for speaker in speaker_model ]
-        
+            return [
+                SpeakerEntity(
+                    id=speaker.id,
+                    email=speaker.email,
+                    full_name=speaker.full_name,
+                    bio=speaker.bio,
+                    created_at=speaker.created_at,
+                )
+                for speaker in speaker_model
+            ]
+
         except Exception as e:
             raise e
-

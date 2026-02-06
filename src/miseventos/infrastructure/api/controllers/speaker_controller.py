@@ -47,6 +47,7 @@ def update_speaker_controller(usecase: SpeakerUseCase):
 
     return controller
 
+
 def get_speakers_controller(usecase: SpeakerUseCase):
     async def controller() -> SpeakerResponse:
         response = usecase.get_speakers()

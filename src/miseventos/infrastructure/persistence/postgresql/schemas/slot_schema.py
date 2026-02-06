@@ -3,13 +3,15 @@ from sqlmodel import SQLModel
 from datetime import datetime, time
 from typing import List, Optional
 
+
 class TimeRange(SQLModel):
     start_time: time
     end_time: time
 
+
 class SlotRequest(SQLModel):
     event_id: UUID
-    time_slots:List[TimeRange]
+    time_slots: List[TimeRange]
     is_assigned: bool = False
 
 
@@ -27,14 +29,17 @@ class SlotDeleteResponse(SQLModel):
     success: bool
     error_message: str | None = None
 
+
 class SlotRangeResponse(SQLModel):
     start_time: str
     end_time: str
+
 
 class SlotRangeIdResponse(SQLModel):
     id: UUID
     start_time: str
     end_time: str
+
 
 class SlotGroupResponse(SQLModel):
     id: str
@@ -43,17 +48,20 @@ class SlotGroupResponse(SQLModel):
     slots: List[SlotRangeResponse]
     created_at: datetime
 
+
 class SlotGroupUpdate(SQLModel):
     event_id: UUID | str
     is_assigned: bool
     slots: List[SlotRangeIdResponse]
     created_at: datetime
 
+
 class SlotGroupUpdateResponse(SQLModel):
     success: bool
     error_message: str | None = None
     slot: SlotGroupUpdate
-   
+
+
 class SlotGroupSaveResponse(SQLModel):
     success: bool
     error_message: str | None = None
@@ -74,10 +82,12 @@ class SlotSaveResponse(SQLModel):
     error_message: str | None = None
     slot: SlotResponse | List[SlotResponse] | List[GetSlotsEventResponse] | None = None
 
+
 class SlotEventsResponse(SQLModel):
     success: bool
     error_message: str | None = None
-    events:  List[GetSlotsEventResponse] | None = None
+    events: List[GetSlotsEventResponse] | None = None
+
 
 class TimeRangeId(SQLModel):
     id: UUID
@@ -89,4 +99,3 @@ class SlotUpdateRequest(SQLModel):
     event_id: UUID
     time_slots: List[TimeRangeId]
     is_assigned: bool = False
-

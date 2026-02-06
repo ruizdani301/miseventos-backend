@@ -1,29 +1,19 @@
-from src.miseventos.infrastructure.persistence.postgresql.models.event_model import EventModel, TimeSlot
+from src.miseventos.infrastructure.persistence.postgresql.models.event_model import (
+    EventModel,
+    TimeSlot,
+)
 from src.miseventos.repositories.event_repository import EventRepository
 
 
 def test_get_event_not_in_timeslot(db_session):
     # ---------- Arrange ----------
-    event_without_slot = EventModel(
-        id=1,
-        title="Evento sin timeslot"
-    )
+    event_without_slot = EventModel(id=1, title="Evento sin timeslot")
 
-    event_with_slot = EventModel(
-        id=2,
-        title="Evento con timeslot"
-    )
+    event_with_slot = EventModel(id=2, title="Evento con timeslot")
 
-    timeslot = TimeSlot(
-        id=1,
-        event_id=2
-    )
+    timeslot = TimeSlot(id=1, event_id=2)
 
-    db_session.add_all([
-        event_without_slot,
-        event_with_slot,
-        timeslot
-    ])
+    db_session.add_all([event_without_slot, event_with_slot, timeslot])
     db_session.commit()
 
     repository = EventRepository(db_session)

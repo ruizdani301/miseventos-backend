@@ -14,9 +14,7 @@ class TimeSlot(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True, index=True)
 
     event_id: UUID = Field(
-        sa_column=Column(
-            ForeignKey("events.id", ondelete="CASCADE"), index=True
-        )
+        sa_column=Column(ForeignKey("events.id", ondelete="CASCADE"), index=True)
     )
 
     start_time: time = Field(sa_column=Column(Time))

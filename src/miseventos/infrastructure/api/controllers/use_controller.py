@@ -10,6 +10,7 @@ from miseventos.use_case.register_user import UserUseCase
 from typing import List
 from uuid import UUID
 
+
 def add_user_controller(usecase: UserUseCase):
     async def controller(body: UserRequest) -> UserResponse:
 
@@ -27,6 +28,7 @@ def update_user_controller(usecase: UserUseCase):
         if not response.success:
             raise HTTPException(status_code=400, detail=response.error_message)
         return response
+
     return controller
 
 
@@ -46,7 +48,9 @@ def find_all_users_controller(usecase: UserUseCase):
         if not response.success:
             raise HTTPException(status_code=400, detail=response.error_message)
         return response
+
     return controller
+
 
 def delete_user_controller(usecase: UserUseCase):
     async def controller(id: UUID) -> UserResponse:
@@ -54,4 +58,5 @@ def delete_user_controller(usecase: UserUseCase):
         if not response.success:
             raise HTTPException(status_code=400, detail=response.error_message)
         return response
+
     return controller

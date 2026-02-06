@@ -9,7 +9,7 @@ from miseventos.infrastructure.persistence.postgresql.schemas.session_schema imp
     SessionResponse,
     SessionDeleteResponse,
     SessionRequest,
-    SessionUpdateRequest
+    SessionUpdateRequest,
 )
 
 
@@ -49,10 +49,10 @@ class SessionUseCase:
             success=True, error_message=None, session=updated_session
         )
 
-    def get_sessions(self,) -> SessionResponse | None:
+    def get_sessions(
+        self,
+    ) -> SessionResponse | None:
         data_session = self.session_implement.get_sessions()
         if not data_session:
-            return SessionResponse(
-                success=False, error_message="No sessions found."
-            )
+            return SessionResponse(success=False, error_message="No sessions found.")
         return SessionResponse(success=True, error_message=None, session=data_session)

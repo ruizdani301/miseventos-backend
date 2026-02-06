@@ -14,7 +14,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from miseventos.infrastructure.api.routes.speaker_routes import speaker_router
 from miseventos.infrastructure.api.routes.login import login_router
 from miseventos.infrastructure.api.routes.logout import logout_router
-from miseventos.infrastructure.api.routes.session_register_routes import session_register_router
+from miseventos.infrastructure.api.routes.session_register_routes import (
+    session_register_router,
+)
+from miseventos.infrastructure.api.routes.verify_auth import auth_router
+
 create_tables()
 
 
@@ -40,6 +44,7 @@ app.include_router(router=speaker_router, prefix="/api/v1")
 app.include_router(router=login_router, prefix="/api/v1")
 app.include_router(router=logout_router, prefix="/api/v1")
 app.include_router(router=session_register_router, prefix="/api/v1")
+app.include_router(router=auth_router, prefix="/api/v1")
 
 
 @app.get("/")

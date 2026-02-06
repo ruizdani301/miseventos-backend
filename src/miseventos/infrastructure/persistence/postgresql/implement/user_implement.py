@@ -8,6 +8,7 @@ from uuid import UUID
 from miseventos.infrastructure.persistence.postgresql.models.enum import RoleName
 from typing import List
 
+
 class UserImplement(UserRepository):
     def __init__(self, session: orm.Session):
         self.session = session
@@ -25,15 +26,23 @@ class UserImplement(UserRepository):
         except Exception as e:
             self.session.rollback()
             raise e
-    
+
     def get_users(self) -> List[UserEntity]:
         try:
             users_model = self.session.query(userModel).all()
-            return [UserEntity(id=user.id, email=user.email, password=user.password_hash, role=user.role) for user in users_model]
+            return [
+                UserEntity(
+                    id=user.id,
+                    email=user.email,
+                    password=user.password_hash,
+                    role=user.role,
+                )
+                for user in users_model
+            ]
         except Exception as e:
             self.session.rollback()
             raise e
-    
+
     def delete_user(self, user_id: UUID) -> UserEntity:
         try:
             user_model = self.session.query(userModel).filter_by(id=user_id).first()
@@ -44,7 +53,7 @@ class UserImplement(UserRepository):
         except Exception as e:
             self.session.rollback()
             raise e
-    
+
     def update_user(self, user: UserEntity) -> UserEntity | None:
         try:
             user_model = self.session.query(userModel).filter_by(id=user.id).first()
@@ -53,15 +62,14 @@ class UserImplement(UserRepository):
                 user_model.password_hash = user.password
                 user_model.role = user.role
                 self.session.commit()
-                return UserEntity(id=user_model.id,
-                                  email=user_model.email,
-                                  role=user_model.role
-                                  )
+                return UserEntity(
+                    id=user_model.id, email=user_model.email, role=user_model.role
+                )
             return None
         except Exception as e:
             self.session.rollback()
             raise e
-    
+
     def get_user_by_id(self, user_id: int) -> UserEntity | None:
         try:
             user_model = self.session.query(userModel).filter_by(id=user_id).first()
@@ -70,7 +78,7 @@ class UserImplement(UserRepository):
                     id=user_model.id,
                     email=user_model.email,
                     password=user_model.password_hash,
-                    role=user_model.role
+                    role=user_model.role,
                 )
             return None
         except Exception as e:
@@ -78,13 +86,15 @@ class UserImplement(UserRepository):
 
     def get_user_by_email(self, useremail: str) -> UserEntity | None:
         try:
-            user_model = self.session.query(userModel).filter_by(email=useremail).first()
+            user_model = (
+                self.session.query(userModel).filter_by(email=useremail).first()
+            )
             if user_model:
                 return UserEntity(
                     id=user_model.id,
                     email=user_model.email,
                     password=user_model.password_hash,
-                    role=user_model.role
+                    role=user_model.role,
                 )
             return None
         except Exception as e:

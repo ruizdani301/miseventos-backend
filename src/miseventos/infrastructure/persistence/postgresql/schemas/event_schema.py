@@ -3,10 +3,18 @@ from typing import Optional, List
 from datetime import datetime, time
 from sqlmodel import SQLModel, Field
 from miseventos.infrastructure.persistence.postgresql.models.enum import EventStatus
-from miseventos.infrastructure.persistence.postgresql.schemas.session_schema import ResponseSession
-from miseventos.infrastructure.persistence.postgresql.schemas.speaker_schema import ResponseSpeaker
-from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import SlotResponse
+from miseventos.infrastructure.persistence.postgresql.schemas.session_schema import (
+    ResponseSession,
+)
+from miseventos.infrastructure.persistence.postgresql.schemas.speaker_schema import (
+    ResponseSpeaker,
+)
+from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import (
+    SlotResponse,
+)
 from uuid import UUID
+
+
 class EventData(SQLModel):
     id: Optional[str] | UUID = None  # UUID como string
     title: str
@@ -30,28 +38,33 @@ class ResponseNestedSession(SQLModel):
     registrations_count: int | None = None
     user_registration_id: Optional[str] | UUID = None
 
+
 class SessionNestedResponse(SQLModel):
     session: ResponseNestedSession
     time_slot: SlotResponse
     speakers: List[ResponseSpeaker]
 
+
 class EventNestedResponse(SQLModel):
     event: EventData
     sessions: List[SessionNestedResponse]
 
+
 class EventsCompletedResponse(SQLModel):
-    success:bool
+    success: bool
     error_message: str | None
     total: int | None
     page: int | None
     page_size: int | None
     total_pages: int | None
-    events:List[EventNestedResponse] | None
+    events: List[EventNestedResponse] | None
+
 
 class EventNestedCompletedResponse(SQLModel):
-    success:bool
+    success: bool
     error_message: str | None
-    events:EventsCompletedResponse | None
+    events: EventsCompletedResponse | None
+
 
 class EventRequest(SQLModel):
     title: str
@@ -60,6 +73,7 @@ class EventRequest(SQLModel):
     end_date: datetime
     capacity: int = Field(..., gt=0)
     status: EventStatus = EventStatus.PUBLISHED
+
 
 class EventUpdateRequest(SQLModel):
     id: Optional[str] | UUID = None
@@ -70,35 +84,42 @@ class EventUpdateRequest(SQLModel):
     capacity: int = Field(..., gt=0)
     status: EventStatus = EventStatus.PUBLISHED
 
+
 class EventSessionResponse(SQLModel):
     id: str
-    title : str
+    title: str
+
 
 class NewTimeRange(SQLModel):
-    id:UUID
+    id: UUID
     start_time: time
     end_time: time
 
+
 class EventSlotResponse(SQLModel):
     id: UUID
-    title : str
-    time_slot : List[NewTimeRange]
+    title: str
+    time_slot: List[NewTimeRange]
+
 
 class EventRespose(SQLModel):
     success: bool
     error_message: str | None
     events: list[EventData] | EventData | None = None
 
+
 class EventSlotRelationResponse(SQLModel):
     success: bool
     error_message: str | None
-    events :  List[EventSlotResponse]
+    events: List[EventSlotResponse]
+
 
 class EventWithOutResponse(SQLModel):
     event_id: UUID
-    title : str
+    title: str
+
 
 class EventNotSlotsResponse(SQLModel):
     success: bool
     error_message: str | None
-    events :  List[EventWithOutResponse]
+    events: List[EventWithOutResponse]

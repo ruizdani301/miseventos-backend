@@ -8,11 +8,11 @@ from miseventos.infrastructure.persistence.postgresql.schemas.event_schema impor
     EventNotSlotsResponse,
     EventsCompletedResponse,
     EventRespose,
-    EventUpdateRequest
-
+    EventUpdateRequest,
 )
 from miseventos.entitis.event import EventEntity
 from uuid import UUID
+
 # from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import (
 #     EventRespose, EventUpdateRequest
 # )
@@ -41,9 +41,9 @@ class EventUseCase:
             start_date=request.start_date,
             end_date=request.end_date,
             capacity=request.capacity,
-            status=status_value
+            status=status_value,
         )
-        #Validate  format
+        # Validate  format
         if not new_event.validate_dates():
             return Response(success=False, error_message="Invalid date range.")
         if not new_event.is_capacity_valid():
@@ -51,45 +51,55 @@ class EventUseCase:
 
         # # Save event  to repository
         event_saved = self.event_implement.add_event(new_event)
-     
 
         return Response(success=True, error_message=None, event=event_saved)
 
-
-    def get_event_paginated(self, page: int, limit: int, user_id: UUID = None) -> EventsCompletedResponse:
-        events = self.event_implement.get_events_paginated(page=page, limit=limit, user_id=user_id)
+    def get_event_paginated(
+        self, page: int, limit: int, user_id: UUID = None, title: str = None
+    ) -> EventsCompletedResponse:
+        events = self.event_implement.get_events_paginated(
+            page=page, limit=limit, user_id=user_id, title=title
+        )
 
         if not events:
-            return EventsCompletedResponse(success=False, error_message="not events found.", events=None)
+            return EventsCompletedResponse(
+                success=False, error_message="not events found.", events=None
+            )
         print(events)
-        return EventsCompletedResponse(success=True,
-                                            total=events["total"],
-                                            page=events["page"],
-                                            total_pages=events["total_pages"],
-                                            page_size=events["page_size"],
-                                            events=events["data"], 
-                                            error_message=None)
-      
+        return EventsCompletedResponse(
+            success=True,
+            total=events["total"],
+            page=events["page"],
+            total_pages=events["total_pages"],
+            page_size=events["page_size"],
+            events=events["data"],
+            error_message=None,
+        )
+
     def get_event_by_title(self, title: str) -> EventRespose:
         event = self.event_implement.get_event_by_title(title)
         if not event:
-            return EventsCompletedResponse(success=False, error_message="Event by title not found.")
-        return EventsCompletedResponse(success=True, events=event["data"],
-                                       error_message=None,
-                                       total=None,
-                                       page=None,
-                                       total_pages=None,
-                                       page_size=None)
+            return EventsCompletedResponse(
+                success=False, error_message="Event by title not found."
+            )
+        return EventsCompletedResponse(
+            success=True,
+            events=event["data"],
+            error_message=None,
+            total=None,
+            page=None,
+            total_pages=None,
+            page_size=None,
+        )
 
     def delete_event(self, event_id: UUID) -> Response:
         deleted_event_id = self.event_implement.del_event(event_id)
         if not deleted_event_id:
             return Response(success=False, error_message="Event not found.")
         return Response(id=deleted_event_id, success=True, error_message=None)
-    
+
     def update_event(self, request: EventUpdateRequest) -> EventRespose:
 
-        
         status_value = (
             request.status.value
             if hasattr(request.status, "value")
@@ -103,40 +113,50 @@ class EventUseCase:
             start_date=request.start_date,
             end_date=request.end_date,
             capacity=request.capacity,
-            status=status_value
+            status=status_value,
         )
-        #Validate  format
+        # Validate  format
         if not new_event.validate_dates():
             return EventRespose(success=False, error_message="Invalid date range.")
         if not new_event.is_capacity_valid():
             return EventRespose(success=False, error_message="Invalid capacity value.")
         event_update = self.event_implement.update_event(new_event)
-  
-        if not event_update:
-            return EventRespose(success=False, error_message= "update failed", events=None)
-        return EventRespose(success=True, error_message= None, events=event_update)
- 
-    
-    def get_events_all(self, page:int, limit:int)->EventRespose:
-        event = self.event_implement.get_events(page=page, limit=limit)
-        
-        if not event:
-            return EventRespose(success=False, error_message= "No data available", events=None)
-        
-        return EventRespose(success=True, error_message= None, events=event)
-  
 
-    def get_event_slot(self)-> EventSlotRelationResponse:
+        if not event_update:
+            return EventRespose(
+                success=False, error_message="update failed", events=None
+            )
+        return EventRespose(success=True, error_message=None, events=event_update)
+
+    def get_events_all(self, page: int, limit: int) -> EventRespose:
+        event = self.event_implement.get_events(page=page, limit=limit)
+
+        if not event:
+            return EventRespose(
+                success=False, error_message="No data available", events=None
+            )
+
+        return EventRespose(success=True, error_message=None, events=event)
+
+    def get_event_slot(self) -> EventSlotRelationResponse:
         event_slot = self.event_implement.get_event_slot_relation()
         if not event_slot:
-            return EventSlotRelationResponse(success=False, error_message= "No data available", events=None)
-        
-        return EventSlotRelationResponse(success=True, error_message= None, events=event_slot)
-    
+            return EventSlotRelationResponse(
+                success=False, error_message="No data available", events=None
+            )
+
+        return EventSlotRelationResponse(
+            success=True, error_message=None, events=event_slot
+        )
+
     def get_event_not_in_slot(self):
         event_slot = self.event_implement.get_event_not_in_timeslot()
-        
+
         if not event_slot:
-            return EventNotSlotsResponse(success=False, error_message= "No data available", events=None)
-        
-        return EventNotSlotsResponse(success=True, error_message= None, events=event_slot)
+            return EventNotSlotsResponse(
+                success=False, error_message="No data available", events=None
+            )
+
+        return EventNotSlotsResponse(
+            success=True, error_message=None, events=event_slot
+        )

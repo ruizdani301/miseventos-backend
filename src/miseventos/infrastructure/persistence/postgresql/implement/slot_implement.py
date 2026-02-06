@@ -8,14 +8,21 @@ from miseventos.infrastructure.persistence.postgresql.schemas.schema import Resp
 from uuid import UUID
 from typing import List
 from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import (
-    SlotDeleteResponse, SlotGroupResponse, SlotRangeResponse, GetSlotsEventResponse,SlotUpdateRequest, SlotGroupUpdateResponse, SlotGroupUpdate, SlotRangeIdResponse
+    SlotDeleteResponse,
+    SlotGroupResponse,
+    SlotRangeResponse,
+    GetSlotsEventResponse,
+    SlotUpdateRequest,
+    SlotGroupUpdateResponse,
+    SlotGroupUpdate,
+    SlotRangeIdResponse,
 )
 from miseventos.infrastructure.persistence.postgresql.models.time_model import TimeSlot
 from miseventos.infrastructure.persistence.postgresql.models.event_model import Event
-#from sqlmodel import select
+
+# from sqlmodel import select
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
-
 
 
 class SlotImplement(SlotRepository):
@@ -39,7 +46,6 @@ class SlotImplement(SlotRepository):
 
             for each_slot in list_slots:
                 self.session.refresh(each_slot)
-
 
             return SlotGroupResponse(
                 id=str(list_slots[0].id),
@@ -87,10 +93,11 @@ class SlotImplement(SlotRepository):
             slot_models = self.session.query(TimeSlotModel).filter(
                 TimeSlotModel.id == slot_id
             )
-            
+
             if slot_models.first() is None:
                 return SlotDeleteResponse(
-                    success=False, error_message="No slots found for the given event ID."
+                    success=False,
+                    error_message="No slots found for the given event ID.",
                 )
             slot_models.delete()
             self.session.commit()
@@ -99,18 +106,17 @@ class SlotImplement(SlotRepository):
             self.session.rollback()
             raise e
 
-
     def get_all_slot(self, page: int, limit: int) -> List[GetSlotsEventResponse]:
         offset = (page - 1) * limit
 
         try:
             statement = (
-            select(Event)
-            .options(selectinload(Event.time_slot))
-            .order_by(Event.created_at.desc())
-            .offset(offset)
-            .limit(limit)
-        )
+                select(Event)
+                .options(selectinload(Event.time_slot))
+                .order_by(Event.created_at.desc())
+                .offset(offset)
+                .limit(limit)
+            )
             events = self.session.execute(statement).scalars().all()
             return [
                 GetSlotsEventResponse(
@@ -125,28 +131,36 @@ class SlotImplement(SlotRepository):
                             end_time=slot.end_time.isoformat(),
                         )
                         for slot in event.time_slot
-                    ]
+                    ],
                 )
                 for event in events
             ]
         except Exception as e:
             raise e
 
-    def update_slots_batch(self, slots_data: SlotUpdateRequest) -> SlotGroupUpdate | None:
+    def update_slots_batch(
+        self, slots_data: SlotUpdateRequest
+    ) -> SlotGroupUpdate | None:
         try:
-            exists = self.session.query(TimeSlotModel).filter(
-                TimeSlotModel.event_id == slots_data.event_id
-            ).first()
+            exists = (
+                self.session.query(TimeSlotModel)
+                .filter(TimeSlotModel.event_id == slots_data.event_id)
+                .first()
+            )
 
             if not exists:
                 return None
 
             updated_slots = []
             for slot_item in slots_data.time_slots:
-                db_slot = self.session.query(TimeSlotModel).filter(
-                    TimeSlotModel.id == slot_item.id,
-                    TimeSlotModel.event_id == slots_data.event_id 
-                ).first()
+                db_slot = (
+                    self.session.query(TimeSlotModel)
+                    .filter(
+                        TimeSlotModel.id == slot_item.id,
+                        TimeSlotModel.event_id == slots_data.event_id,
+                    )
+                    .first()
+                )
 
                 if db_slot:
                     db_slot.start_time = slot_item.start_time

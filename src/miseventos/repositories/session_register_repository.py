@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
-from miseventos.infrastructure.persistence.postgresql.schemas.session_register_schema import(
-    SessionRegisterRequest, 
+from miseventos.infrastructure.persistence.postgresql.schemas.session_register_schema import (
+    SessionRegisterRequest,
     registerResponse,
-    SessionDeleteResponse)
+    SessionDeleteResponse,
+)
 
 
 class SessionRegisterRepository(ABC):
@@ -12,5 +13,7 @@ class SessionRegisterRepository(ABC):
         pass
 
     @abstractmethod
-    def delete_session_register(self, body: SessionRegisterRequest) -> SessionDeleteResponse:
+    def delete_session_register(
+        self, body: SessionRegisterRequest
+    ) -> SessionDeleteResponse:
         pass

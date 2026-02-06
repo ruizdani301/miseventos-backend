@@ -7,7 +7,7 @@ from miseventos.infrastructure.api.controllers.speaker_controller import (
     get_speakers_by_event_id_controller,
     delete_speaker_controller,
     update_speaker_controller,
-    get_speakers_controller
+    get_speakers_controller,
 )
 from uuid import UUID
 from miseventos.infrastructure.persistence.postgresql.schemas.session_schema import (
@@ -21,6 +21,7 @@ from miseventos.infrastructure.persistence.postgresql.schemas.speaker_schema imp
     SpeakerRequest,
     SpeakerUpdateRequest,
 )
+from token_jwt.jwt_handler import get_current_user
 
 
 def register_speakercase(db: Session = Depends(get_db)):
@@ -33,7 +34,9 @@ speaker_router = APIRouter(tags=["Oradores"])
 
 @speaker_router.post("/speaker/")
 async def register_speaker(
-    body: SpeakerRequest, usecase: SpeakerUseCase = Depends(register_speakercase)
+    body: SpeakerRequest,
+    usecase: SpeakerUseCase = Depends(register_speakercase),
+    current_user: dict = Depends(get_current_user),
 ):
     """Registra un nuevo orador."""
     response = save_speaker_controller(usecase)
@@ -42,17 +45,21 @@ async def register_speaker(
 
 @speaker_router.get("/speaker/{event_id}")
 async def get_speakers_by_event_id(
-    event_id: UUID, usecase: SpeakerUseCase = Depends(register_speakercase)
-    ):
+    event_id: UUID,
+    usecase: SpeakerUseCase = Depends(register_speakercase),
+    current_user: dict = Depends(get_current_user),
+):
     """Obtiene todos los oradores que participan en un evento específico."""
-    
+
     response = get_speakers_by_event_id_controller(usecase)
     return await response(event_id)
 
 
 @speaker_router.delete("/speaker/{speaker_id}")
 async def delete_speaker(
-    speaker_id: UUID, usecase: SpeakerUseCase = Depends(register_speakercase)
+    speaker_id: UUID,
+    usecase: SpeakerUseCase = Depends(register_speakercase),
+    current_user: dict = Depends(get_current_user),
 ):
     """Elimina un orador por su ID."""
     response = delete_speaker_controller(usecase)
@@ -61,7 +68,9 @@ async def delete_speaker(
 
 @speaker_router.put("/speaker/")
 async def update_speaker(
-    body: SpeakerUpdateRequest, usecase: SpeakerUseCase = Depends(register_speakercase)
+    body: SpeakerUpdateRequest,
+    usecase: SpeakerUseCase = Depends(register_speakercase),
+    current_user: dict = Depends(get_current_user),
 ):
     """Actualiza la información de un orador existente."""
     response = update_speaker_controller(usecase)
@@ -70,9 +79,10 @@ async def update_speaker(
 
 @speaker_router.get("/speaker/")
 async def get_speakers(
-    usecase: SpeakerUseCase = Depends(register_speakercase)
+    usecase: SpeakerUseCase = Depends(register_speakercase),
+    current_user: dict = Depends(get_current_user),
 ):
     """Obtiene una lista de todos los oradores."""
-    
+
     response = get_speakers_controller(usecase)
     return await response()

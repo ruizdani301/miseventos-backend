@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from miseventos.entitis.sessions import SessionEntity
-from miseventos.infrastructure.persistence.postgresql.schemas.session_schema import SessionUpdateRequest
+from miseventos.infrastructure.persistence.postgresql.schemas.session_schema import (
+    SessionUpdateRequest,
+)
 from uuid import UUID
 from typing import List
 
@@ -25,6 +27,3 @@ class SessionRepository(ABC):
     @abstractmethod
     def get_sessions(self) -> List[SessionEntity] | None:
         pass
-
-
-    

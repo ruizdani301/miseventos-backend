@@ -15,17 +15,13 @@ class TimeSlotEntity:
     created_at: datetime = None
     is_assigned: bool = False
 
-
     def validate_time_slot(self) -> None:
         if not self.start_time or not self.end_time:
             raise HTTPException(
-                status_code=400,
-                detail="start_time and end_time are required"
+                status_code=400, detail="start_time and end_time are required"
             )
 
         if self.start_time >= self.end_time:
             raise HTTPException(
-                status_code=400,
-                detail="start_time must be earlier than end_time"
+                status_code=400, detail="start_time must be earlier than end_time"
             )
-

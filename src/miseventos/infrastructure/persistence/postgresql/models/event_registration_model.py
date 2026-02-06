@@ -17,9 +17,7 @@ class EventRegistration(SQLModel, table=True):
 
     user_id: UUID = Field(foreign_key="users.id", index=True)
     event_id: UUID = Field(
-        sa_column=Column(
-            ForeignKey("events.id", ondelete="CASCADE"), index=True
-        )
+        sa_column=Column(ForeignKey("events.id", ondelete="CASCADE"), index=True)
     )
 
     registered_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

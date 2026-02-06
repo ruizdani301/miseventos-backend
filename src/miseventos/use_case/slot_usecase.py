@@ -16,7 +16,7 @@ from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import
     SlotGroupSaveResponse,
     SlotEventsResponse,
     SlotGroupUpdateResponse,
-    SlotUpdateRequest
+    SlotUpdateRequest,
 )
 
 
@@ -39,17 +39,17 @@ class SlotUseCase:
 
             slots.append(slot)
 
-        print(slots)
         slot_saved = self.slot_implement.add_slot(slots)
-     
+
         if not slot_saved:
-            return SlotGroupSaveResponse(success=False, error_message="Error saving slot.")
+            return SlotGroupSaveResponse(
+                success=False, error_message="Error saving slot."
+            )
 
         return SlotGroupSaveResponse(success=True, error_message=None, slot=slot_saved)
 
     def get_slot_by_event_id(self, event_id: UUID) -> SlotSaveResponse:
         slots_list = self.slot_implement.get_slot_by_event_id(event_id=event_id)
-        print("UseCase Slots List:", slots_list)
         if not slots_list:
             return SlotSaveResponse(
                 success=False, error_message="No slots found for the given event ID."
@@ -64,17 +64,22 @@ class SlotUseCase:
             )
         return SlotDeleteResponse(id=response.id, success=True, error_message=None)
 
-    def get_slot_all(self, page:int, limit:int) -> SlotEventsResponse:
+    def get_slot_all(self, page: int, limit: int) -> SlotEventsResponse:
         slots_list = self.slot_implement.get_all_slot(page=page, limit=limit)
-        print("UseCase Slots List:", slots_list)
         if not slots_list:
             return SlotEventsResponse(
                 success=False, error_message="No slots found for the given event ID."
             )
         return SlotEventsResponse(success=True, error_message=None, events=slots_list)
 
-    def update_slots_batch(self, slots_data: SlotUpdateRequest) -> SlotGroupUpdateResponse:
+    def update_slots_batch(
+        self, slots_data: SlotUpdateRequest
+    ) -> SlotGroupUpdateResponse:
         update_slots = self.slot_implement.update_slots_batch(slots_data)
         if not update_slots:
-            return SlotGroupUpdateResponse(success=False, error_message="Error updating slots.")
-        return SlotGroupUpdateResponse(success=True, error_message=None, slot=update_slots)
+            return SlotGroupUpdateResponse(
+                success=False, error_message="Error updating slots."
+            )
+        return SlotGroupUpdateResponse(
+            success=True, error_message=None, slot=update_slots
+        )
