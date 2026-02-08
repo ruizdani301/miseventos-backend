@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
+
 from miseventos.infrastructure.persistence.postgresql.schemas.session_register_schema import (
+    SessionDeleteResponse,
     SessionRegisterRequest,
     registerResponse,
-    SessionDeleteResponse,
 )
 
 

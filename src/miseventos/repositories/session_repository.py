@@ -1,10 +1,12 @@
 from abc import ABC, abstractmethod
+from typing import List
+from uuid import UUID
+
 from miseventos.entitis.sessions import SessionEntity
 from miseventos.infrastructure.persistence.postgresql.schemas.session_schema import (
+    ResponseSessionSpeaker,
     SessionUpdateRequest,
 )
-from uuid import UUID
-from typing import List
 
 
 class SessionRepository(ABC):
@@ -25,5 +27,5 @@ class SessionRepository(ABC):
         pass
 
     @abstractmethod
-    def get_sessions(self) -> List[SessionEntity] | None:
+    def get_sessions(self) -> List[ResponseSessionSpeaker] | None:
         pass

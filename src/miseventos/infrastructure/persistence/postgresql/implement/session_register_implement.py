@@ -1,29 +1,29 @@
-from sqlalchemy import orm
-from miseventos.repositories.session_register_repository import (
-    SessionRegisterRepository,
-)
-from miseventos.infrastructure.persistence.postgresql.models.session_model import (
-    Session as SessionModel,
-)
-from miseventos.infrastructure.persistence.postgresql.models.user_model import User
+from sqlalchemy import and_, orm
+from sqlalchemy.exc import IntegrityError
+
 from miseventos.infrastructure.persistence.postgresql.models.event_model import Event
 from miseventos.infrastructure.persistence.postgresql.models.event_registration_model import (
     EventRegistration,
 )
-from miseventos.infrastructure.persistence.postgresql.models.session_registration_model import (
-    SessionRegistration,
-)
 from miseventos.infrastructure.persistence.postgresql.models.session_model import (
     Session,
 )
+from miseventos.infrastructure.persistence.postgresql.models.session_model import (
+    Session as SessionModel,
+)
+from miseventos.infrastructure.persistence.postgresql.models.session_registration_model import (
+    SessionRegistration,
+)
+from miseventos.infrastructure.persistence.postgresql.models.user_model import User
 from miseventos.infrastructure.persistence.postgresql.schemas.session_register_schema import (
-    SessionRegisterRequest,
-    registerResponse,
     SessionDeleteResponse,
     SessionRegisterDeleteRequest,
+    SessionRegisterRequest,
+    registerResponse,
 )
-from sqlalchemy import and_
-from sqlalchemy.exc import IntegrityError
+from miseventos.repositories.session_register_repository import (
+    SessionRegisterRepository,
+)
 
 
 class SessionRegisterImplement(SessionRegisterRepository):

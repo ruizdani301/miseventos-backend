@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime, time
-from uuid import UUID
 from typing import Optional
 from uuid import UUID
+
 from fastapi import HTTPException
 
 

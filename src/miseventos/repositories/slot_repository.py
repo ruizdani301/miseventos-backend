@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
-from miseventos.entitis.time_slot import TimeSlotEntity
-from uuid import UUID
 from typing import List
+from uuid import UUID
+
+from miseventos.entitis.time_slot import TimeSlotEntity
 from miseventos.infrastructure.persistence.postgresql.schemas.schema import Response
 from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import (
     GetSlotsEventResponse,
-    SlotUpdateRequest,
-    SlotGroupResponse,
     SlotGroupUpdate,
+    SlotUpdateRequest,
 )
 
 

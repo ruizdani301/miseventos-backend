@@ -1,4 +1,5 @@
 from fastapi import HTTPException
+
 from miseventos.infrastructure.persistence.postgresql.schemas.user_schema import (
     LoginRequest,
     LoginResponse,

@@ -1,21 +1,23 @@
-from sqlalchemy import orm
-from miseventos.repositories.speaker_repository import SpeakerRepository
-from miseventos.infrastructure.persistence.postgresql.models.speaker_model import (
-    Speaker as SpeakerModel,
-)
-from miseventos.entitis.speaker import SpeakerEntity
-from uuid import UUID
 from typing import List
+from uuid import UUID
+
+from sqlalchemy import orm
+
+from miseventos.entitis.speaker import SpeakerEntity
+from miseventos.infrastructure.persistence.postgresql.models.session_model import (
+    Session,
+)
 from miseventos.infrastructure.persistence.postgresql.models.session_speaker_model import (
     SessionSpeaker,
 )
-from miseventos.infrastructure.persistence.postgresql.models.session_model import (
-    Session,
+from miseventos.infrastructure.persistence.postgresql.models.speaker_model import (
+    Speaker as SpeakerModel,
 )
 from miseventos.infrastructure.persistence.postgresql.schemas.speaker_schema import (
     ResponseSimpleSpeaker,
     SpeakerUpdateRequest,
 )
+from miseventos.repositories.speaker_repository import SpeakerRepository
 
 
 class SpeakerImplement(SpeakerRepository):

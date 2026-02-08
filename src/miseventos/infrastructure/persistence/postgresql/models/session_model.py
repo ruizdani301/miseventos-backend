@@ -1,17 +1,19 @@
 from datetime import datetime, timezone
-from typing import Optional, List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID, uuid4
-from sqlmodel import SQLModel, Field, Relationship
+
 from sqlalchemy import Column, ForeignKey
+from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from .event_model import Event
-    from .time_model import TimeSlot
-    from .session_speaker_model import SessionSpeaker
     from miseventos.infrastructure.persistence.postgresql.models.speaker_model import (
         Speaker,
     )
+
+    from .event_model import Event
     from .session_registration_model import SessionRegistration
+    from .session_speaker_model import SessionSpeaker
+    from .time_model import TimeSlot
 
 
 class Session(SQLModel, table=True):

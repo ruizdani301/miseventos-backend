@@ -2,8 +2,9 @@ from datetime import datetime, time, timezone
 from typing import Optional
 from uuid import UUID, uuid4
 
-from sqlmodel import SQLModel, Field, Relationship
-from sqlalchemy import Time, Column, ForeignKey
+from sqlalchemy import Column, ForeignKey, Time
+from sqlmodel import Field, Relationship, SQLModel
+
 from .event_model import Event
 from .session_model import Session
 

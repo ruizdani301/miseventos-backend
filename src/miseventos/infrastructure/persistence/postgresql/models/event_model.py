@@ -1,15 +1,15 @@
 from datetime import datetime, timezone
-from typing import Optional, List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID, uuid4
 
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import Field, Relationship, SQLModel
+
 from .enum import EventStatus
 
-
 if TYPE_CHECKING:
+    from .event_registration_model import EventRegistration
     from .session_model import Session
     from .time_model import TimeSlot
-    from .event_registration_model import EventRegistration
 
 
 class Event(SQLModel, table=True):

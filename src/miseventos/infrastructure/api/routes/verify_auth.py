@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+
 from miseventos.infrastructure.persistence.postgresql.models.user_model import User
-from token_jwt.jwt_handler import get_current_user
 from miseventos.infrastructure.persistence.postgresql.schemas.user_schema import (
     AuthResponse,
     UserAuthResponse,
 )
-from fastapi import HTTPException
+from token_jwt.jwt_handler import get_current_user
 
 auth_router = APIRouter(tags=["Auth"])
 

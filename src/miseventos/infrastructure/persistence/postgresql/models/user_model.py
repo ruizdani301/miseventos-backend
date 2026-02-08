@@ -1,9 +1,10 @@
 from datetime import datetime, timezone
-from typing import Optional, List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID, uuid4
-from sqlmodel import SQLModel, Field, Relationship
-from .enum import RoleName
 
+from sqlmodel import Field, Relationship, SQLModel
+
+from .enum import RoleName
 
 if TYPE_CHECKING:
 

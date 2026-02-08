@@ -1,9 +1,9 @@
-import jwt
-from datetime import datetime, timedelta, timezone
 import os
+from datetime import datetime, timedelta, timezone
+
+import jwt
 from dotenv import load_dotenv
-from fastapi import HTTPException, Depends
-from fastapi import Request
+from fastapi import Depends, HTTPException, Request
 
 load_dotenv()
 

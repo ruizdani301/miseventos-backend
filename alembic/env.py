@@ -1,27 +1,27 @@
-from logging.config import fileConfig
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-from alembic import context
 import os
 import sys
+from logging.config import fileConfig
 from pathlib import Path
 
 from dotenv import load_dotenv
+from sqlalchemy import engine_from_config, pool
+
+from alembic import context
 from miseventos.infrastructure.persistence.postgresql.models.event_model import Event
+from miseventos.infrastructure.persistence.postgresql.models.event_registration_model import (
+    EventRegistration,
+)
 from miseventos.infrastructure.persistence.postgresql.models.session_model import (
     Session,
-)
-from miseventos.infrastructure.persistence.postgresql.models.speaker_model import (
-    Speaker,
-)
-from miseventos.infrastructure.persistence.postgresql.models.session_speaker_model import (
-    SessionSpeaker,
 )
 from miseventos.infrastructure.persistence.postgresql.models.session_registration_model import (
     SessionRegistration,
 )
-from miseventos.infrastructure.persistence.postgresql.models.event_registration_model import (
-    EventRegistration,
+from miseventos.infrastructure.persistence.postgresql.models.session_speaker_model import (
+    SessionSpeaker,
+)
+from miseventos.infrastructure.persistence.postgresql.models.speaker_model import (
+    Speaker,
 )
 from miseventos.infrastructure.persistence.postgresql.models.time_model import TimeSlot
 from miseventos.infrastructure.persistence.postgresql.models.user_model import User

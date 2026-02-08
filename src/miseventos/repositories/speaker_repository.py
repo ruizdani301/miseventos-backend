@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from uuid import UUID
 from typing import List
+from uuid import UUID
+
 from miseventos.entitis.speaker import SpeakerEntity
 from miseventos.infrastructure.persistence.postgresql.schemas.speaker_schema import (
     ResponseSimpleSpeaker,

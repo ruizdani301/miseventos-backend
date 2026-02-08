@@ -1,14 +1,15 @@
 from uuid import UUID
+
+from miseventos.entitis.speaker import SpeakerEntity
 from miseventos.infrastructure.persistence.postgresql.implement.speaker_implement import (
     SpeakerImplement,
 )
 from miseventos.infrastructure.persistence.postgresql.schemas.speaker_schema import (
-    SpeakerResponse,
     SpeakerDeleteResponse,
     SpeakerEventResponse,
+    SpeakerResponse,
     SpeakerUpdateRequest,
 )
-from miseventos.entitis.speaker import SpeakerEntity
 
 
 class SpeakerUseCase:

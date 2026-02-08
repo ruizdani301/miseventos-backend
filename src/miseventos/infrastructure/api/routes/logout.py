@@ -1,7 +1,5 @@
-from fastapi import APIRouter, Depends, Response, HTTPException
-from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, Response
 
-# Asegúrate de importar HTTPException
 from token_jwt.jwt_handler import get_current_user
 
 logout_router = APIRouter(

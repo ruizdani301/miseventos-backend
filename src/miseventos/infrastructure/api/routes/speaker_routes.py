@@ -1,26 +1,28 @@
-from miseventos.infrastructure.persistence.postgresql.models.database import get_db
-from sqlmodel import Session
-from fastapi import APIRouter, Depends
-from miseventos.use_case.session_usecase import SessionUseCase
-from miseventos.infrastructure.api.controllers.speaker_controller import (
-    save_speaker_controller,
-    get_speakers_by_event_id_controller,
-    delete_speaker_controller,
-    update_speaker_controller,
-    get_speakers_controller,
-)
 from uuid import UUID
-from miseventos.infrastructure.persistence.postgresql.schemas.session_schema import (
-    SessionRequest,
+
+from fastapi import APIRouter, Depends
+from sqlmodel import Session
+
+from miseventos.infrastructure.api.controllers.speaker_controller import (
+    delete_speaker_controller,
+    get_speakers_by_event_id_controller,
+    get_speakers_controller,
+    save_speaker_controller,
+    update_speaker_controller,
 )
 from miseventos.infrastructure.persistence.postgresql.implement.speaker_implement import (
     SpeakerImplement,
 )
-from miseventos.use_case.speaker_usecase import SpeakerUseCase
+from miseventos.infrastructure.persistence.postgresql.models.database import get_db
+from miseventos.infrastructure.persistence.postgresql.schemas.session_schema import (
+    SessionRequest,
+)
 from miseventos.infrastructure.persistence.postgresql.schemas.speaker_schema import (
     SpeakerRequest,
     SpeakerUpdateRequest,
 )
+from miseventos.use_case.session_usecase import SessionUseCase
+from miseventos.use_case.speaker_usecase import SpeakerUseCase
 from token_jwt.jwt_handler import get_current_user
 
 

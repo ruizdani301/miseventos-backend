@@ -1,19 +1,17 @@
-from fastapi import HTTPException
-from miseventos.use_case.slot_usecase import SlotUseCase
 from uuid import UUID
+
+from fastapi import HTTPException
+
 from miseventos.infrastructure.persistence.postgresql.schemas.schema import Response
 from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import (
-    SlotResponse,
     SlotEventsResponse,
-)
-from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import (
-    SlotRequest,
-)
-from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import (
-    SlotSaveResponse,
     SlotGroupUpdateResponse,
+    SlotRequest,
+    SlotResponse,
+    SlotSaveResponse,
     SlotUpdateRequest,
 )
+from miseventos.use_case.slot_usecase import SlotUseCase
 
 
 def add_slot_controller(usecase: SlotUseCase):

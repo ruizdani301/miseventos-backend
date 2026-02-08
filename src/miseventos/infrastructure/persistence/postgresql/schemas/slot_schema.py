@@ -1,7 +1,8 @@
-from uuid import UUID
-from sqlmodel import SQLModel
 from datetime import datetime, time
 from typing import List, Optional
+from uuid import UUID
+
+from sqlmodel import SQLModel
 
 
 class TimeRange(SQLModel):

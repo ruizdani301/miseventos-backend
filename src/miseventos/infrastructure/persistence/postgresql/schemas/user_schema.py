@@ -1,7 +1,9 @@
-from typing import Optional, List
-from uuid import UUID
-from sqlmodel import SQLModel
 from datetime import datetime
+from typing import List, Optional
+from uuid import UUID
+
+from sqlmodel import SQLModel
+
 from miseventos.infrastructure.persistence.postgresql.models.enum import RoleName
 
 

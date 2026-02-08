@@ -1,23 +1,26 @@
-from miseventos.entitis.sessions import SessionEntity
-from uuid import UUID
 from typing import List
+from uuid import UUID
+
+from fastapi import HTTPException, status
 from sqlalchemy import orm
-from miseventos.repositories.session_repository import SessionRepository
+from sqlalchemy.orm import joinedload
+
+from miseventos.entitis.sessions import SessionEntity
 from miseventos.infrastructure.persistence.postgresql.models.session_model import (
     Session as SessionModel,
 )
-from fastapi import HTTPException, status
-
 from miseventos.infrastructure.persistence.postgresql.models.session_speaker_model import (
     SessionSpeaker,
-)
-from miseventos.infrastructure.persistence.postgresql.schemas.session_schema import (
-    SessionRequest,
-    SessionUpdateRequest,
 )
 from miseventos.infrastructure.persistence.postgresql.models.speaker_model import (
     Speaker,
 )
+from miseventos.infrastructure.persistence.postgresql.schemas.session_schema import (
+    ResponseSessionSpeaker,
+    SessionRequest,
+    SessionUpdateRequest,
+)
+from miseventos.repositories.session_repository import SessionRepository
 
 
 class SessionImplement(SessionRepository):
@@ -26,7 +29,6 @@ class SessionImplement(SessionRepository):
 
     def add_session(self, body: SessionRequest) -> SessionModel:
         try:
-            # 1️⃣ Validar speaker
             speaker_id = UUID(body.speaker_id)
 
             speaker = (
@@ -151,22 +153,40 @@ class SessionImplement(SessionRepository):
         except Exception as e:
             self.session.rollback()
             raise e
-
-    def get_sessions(self) -> List[SessionEntity] | None:
+    
+    def get_sessions(self) -> List[ResponseSessionSpeaker] | None:
         try:
-            sessions_models = self.session.query(SessionModel).all()
-            if sessions_models:
-                return [
-                    SessionEntity(
-                        id=str(session_model.id),
-                        title=session_model.title,
-                        description=session_model.description,
-                        created_at=session_model.created_at,
-                        event_id=str(session_model.event_id),
-                        capacity=session_model.capacity,
-                        time_slot_id=session_model.time_slot_id,
-                    )
-                    for session_model in sessions_models
-                ]
+            sessions_models = (
+                self.session.query(SessionModel)
+                .options(joinedload(SessionModel.session_speakers))
+                .all()
+            )
+
+            if not sessions_models:
+                return []
+
+            response_list = []
+            for session_model in sessions_models:
+                s_id = None
+                if session_model.session_speakers:
+                    s_id = str(session_model.session_speakers[0].speaker_id)
+                else:
+                    print("  - AVISO: Esta sesión NO tiene speakers asociados en la tabla intermedia")
+
+                item = ResponseSessionSpeaker(
+                    id=str(session_model.id),
+                    title=session_model.title,
+                    description=session_model.description or "",
+                    created_at=session_model.created_at,
+                    event_id=session_model.event_id,
+                    capacity=session_model.capacity,
+                    time_slot_id=session_model.time_slot_id,
+                    speaker_id=s_id
+                )
+                response_list.append(item)
+                
+            return response_list
+
         except Exception as e:
-            return e
+            print(f"Error crítico en get_sessions: {e}")
+            return None

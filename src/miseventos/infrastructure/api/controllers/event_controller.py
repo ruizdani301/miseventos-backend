@@ -1,16 +1,18 @@
-from fastapi import HTTPException
-from miseventos.entitis.event import EventEntity
-from miseventos.use_case.event_usecase import EventUseCase
 from typing import List
 from uuid import UUID
+
+from fastapi import HTTPException
+
+from miseventos.entitis.event import EventEntity
 from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import (
+    EventNotSlotsResponse,
+    EventRequest,
     EventRespose,
     EventsCompletedResponse,
-    EventRequest,
-    EventUpdateRequest,
     EventSlotRelationResponse,
-    EventNotSlotsResponse,
+    EventUpdateRequest,
 )
+from miseventos.use_case.event_usecase import EventUseCase
 
 
 def add_event_controller(usecase: EventUseCase):

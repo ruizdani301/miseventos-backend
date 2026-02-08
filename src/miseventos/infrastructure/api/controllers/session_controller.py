@@ -1,12 +1,14 @@
-from miseventos.use_case.session_usecase import SessionUseCase
+from uuid import UUID
+
+from fastapi import HTTPException
+
 from miseventos.infrastructure.persistence.postgresql.schemas.session_schema import (
+    SessionDeleteResponse,
     SessionRequest,
     SessionResponse,
-    SessionDeleteResponse,
     SessionUpdateRequest,
 )
-from fastapi import HTTPException
-from uuid import UUID
+from miseventos.use_case.session_usecase import SessionUseCase
 
 
 def create_session_controller(usecase: SessionUseCase):

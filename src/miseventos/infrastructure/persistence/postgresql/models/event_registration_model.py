@@ -1,8 +1,10 @@
 from datetime import datetime, timezone
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
-from sqlmodel import SQLModel, Field, Relationship
-from sqlalchemy import UniqueConstraint, Column, ForeignKey
+
+from sqlalchemy import Column, ForeignKey, UniqueConstraint
+from sqlmodel import Field, Relationship, SQLModel
+
 from .event_model import Event
 
 if TYPE_CHECKING:

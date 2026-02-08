@@ -1,18 +1,20 @@
-from miseventos.entitis.event import EventEntity
-from typing import Optional, List
 from datetime import datetime, time
-from sqlmodel import SQLModel, Field
+from typing import List, Optional
+from uuid import UUID
+
+from sqlmodel import Field, SQLModel
+
+from miseventos.entitis.event import EventEntity
 from miseventos.infrastructure.persistence.postgresql.models.enum import EventStatus
 from miseventos.infrastructure.persistence.postgresql.schemas.session_schema import (
     ResponseSession,
 )
-from miseventos.infrastructure.persistence.postgresql.schemas.speaker_schema import (
-    ResponseSpeaker,
-)
 from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import (
     SlotResponse,
 )
-from uuid import UUID
+from miseventos.infrastructure.persistence.postgresql.schemas.speaker_schema import (
+    ResponseSpeaker,
+)
 
 
 class EventData(SQLModel):

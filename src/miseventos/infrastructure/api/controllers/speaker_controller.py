@@ -1,9 +1,10 @@
-from miseventos.use_case.speaker_usecase import SpeakerUseCase
 from fastapi import HTTPException
+
 from miseventos.infrastructure.persistence.postgresql.schemas.speaker_schema import (
-    SpeakerResponse,
     SpeakerDeleteResponse,
+    SpeakerResponse,
 )
+from miseventos.use_case.speaker_usecase import SpeakerUseCase
 
 
 def save_speaker_controller(usecase: SpeakerUseCase):

@@ -1,21 +1,20 @@
+from uuid import UUID
+
+from miseventos.entitis.time_slot import TimeSlotEntity as SlotEntity
 from miseventos.infrastructure.persistence.postgresql.implement.slot_implement import (
     SlotImplement,
 )
 from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import (
     EventRequest,
 )
-from miseventos.entitis.time_slot import TimeSlotEntity as SlotEntity
-from uuid import UUID
-from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import (
-    SlotRequest,
-)
 from miseventos.infrastructure.persistence.postgresql.schemas.schema import Response
 from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import (
-    SlotSaveResponse,
     SlotDeleteResponse,
-    SlotGroupSaveResponse,
     SlotEventsResponse,
+    SlotGroupSaveResponse,
     SlotGroupUpdateResponse,
+    SlotRequest,
+    SlotSaveResponse,
     SlotUpdateRequest,
 )
 

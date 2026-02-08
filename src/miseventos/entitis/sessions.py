@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from ..infrastructure.persistence.postgresql.models.enum import EventStatus
-from uuid import UUID
 from typing import Optional
+from uuid import UUID
+
+from ..infrastructure.persistence.postgresql.models.enum import EventStatus
 
 
 @dataclass

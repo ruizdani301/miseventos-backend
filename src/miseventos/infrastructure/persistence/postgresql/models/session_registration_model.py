@@ -2,11 +2,11 @@ from datetime import datetime, timezone
 from typing import Optional
 from uuid import UUID, uuid4
 
-from sqlmodel import SQLModel, Field, Relationship
-from sqlalchemy import UniqueConstraint, Column, ForeignKey
+from sqlalchemy import Column, ForeignKey, UniqueConstraint
+from sqlmodel import Field, Relationship, SQLModel
 
-from .user_model import User
 from .session_model import Session
+from .user_model import User
 
 
 class SessionRegistration(SQLModel, table=True):

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 from miseventos.infrastructure.persistence.postgresql.models.enum import RoleName
 
 

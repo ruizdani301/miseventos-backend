@@ -1,7 +1,8 @@
-from sqlmodel import SQLModel, create_engine
-from sqlalchemy.orm import sessionmaker
 import os
+
 from dotenv import load_dotenv
+from sqlalchemy.orm import sessionmaker
+from sqlmodel import SQLModel, create_engine
 
 Base = SQLModel.metadata
 
@@ -24,14 +25,13 @@ def get_db():
 def create_tables():
     """Crear tablas desde todos los modelos SQLModel"""
     # Importa todos tus modelos AQUÍ para que SQLModel los registre
-    from .user_model import User
     from .event_model import Event
-
-    from .speaker_model import Speaker
-    from .session_model import Session
-    from .time_model import TimeSlot
     from .event_registration_model import EventRegistration
+    from .session_model import Session
     from .session_registration_model import SessionRegistration
     from .session_speaker_model import SessionSpeaker  # Importa todos los modelos
+    from .speaker_model import Speaker
+    from .time_model import TimeSlot
+    from .user_model import User
 
     SQLModel.metadata.create_all(engine)

@@ -1,14 +1,12 @@
 from abc import ABC, abstractmethod
-
 from typing import List
 from uuid import UUID
-from miseventos.infrastructure.persistence.postgresql.schemas.user_schema import (
-    UserResponse,
-    UserRequest,
-    UserEmailRequest,
-    UserEmailResponse,
-)
+
 from miseventos.entitis.user import UserEntity
+from miseventos.infrastructure.persistence.postgresql.schemas.user_schema import (
+    UserEmailRequest,
+    UserRequest,
+)
 
 
 class UserRepository(ABC):

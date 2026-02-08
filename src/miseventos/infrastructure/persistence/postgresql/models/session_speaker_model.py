@@ -1,12 +1,11 @@
 from typing import Optional
-from uuid import UUID
+from uuid import UUID, uuid4
 
-from sqlmodel import SQLModel, Field, Relationship
 from sqlalchemy import Column, ForeignKey
+from sqlmodel import Field, Relationship, SQLModel
+
 from .session_model import Session
 from .speaker_model import Speaker
-from uuid import uuid4
-from uuid import UUID
 
 
 class SessionSpeaker(SQLModel, table=True):

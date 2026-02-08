@@ -1,14 +1,17 @@
-from miseventos.entitis.user import UserEntity
-from fastapi import HTTPException
-from ....infrastructure.persistence.postgresql.schemas.user_schema import (
-    UserRequest,
-    UserResponse,
-    UserEmailRequest,
-    UserEmailResponse,
-)
-from miseventos.use_case.register_user import UserUseCase
 from typing import List
 from uuid import UUID
+
+from fastapi import HTTPException
+
+from miseventos.entitis.user import UserEntity
+from miseventos.use_case.register_user import UserUseCase
+
+from ....infrastructure.persistence.postgresql.schemas.user_schema import (
+    UserEmailRequest,
+    UserEmailResponse,
+    UserRequest,
+    UserResponse,
+)
 
 
 def add_user_controller(usecase: UserUseCase):

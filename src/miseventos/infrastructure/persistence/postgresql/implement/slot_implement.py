@@ -1,28 +1,28 @@
+from typing import List
+from uuid import UUID
+
+# from sqlmodel import select
+from sqlalchemy import orm, select
+from sqlalchemy.orm import selectinload
+
 from miseventos.entitis.time_slot import TimeSlotEntity
-from miseventos.repositories.slot_repository import SlotRepository
-from sqlalchemy import orm
+from miseventos.infrastructure.persistence.postgresql.models.event_model import Event
+from miseventos.infrastructure.persistence.postgresql.models.time_model import TimeSlot
 from miseventos.infrastructure.persistence.postgresql.models.time_model import (
     TimeSlot as TimeSlotModel,
 )
 from miseventos.infrastructure.persistence.postgresql.schemas.schema import Response
-from uuid import UUID
-from typing import List
 from miseventos.infrastructure.persistence.postgresql.schemas.slot_schema import (
+    GetSlotsEventResponse,
     SlotDeleteResponse,
     SlotGroupResponse,
-    SlotRangeResponse,
-    GetSlotsEventResponse,
-    SlotUpdateRequest,
-    SlotGroupUpdateResponse,
     SlotGroupUpdate,
+    SlotGroupUpdateResponse,
     SlotRangeIdResponse,
+    SlotRangeResponse,
+    SlotUpdateRequest,
 )
-from miseventos.infrastructure.persistence.postgresql.models.time_model import TimeSlot
-from miseventos.infrastructure.persistence.postgresql.models.event_model import Event
-
-# from sqlmodel import select
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
+from miseventos.repositories.slot_repository import SlotRepository
 
 
 class SlotImplement(SlotRepository):

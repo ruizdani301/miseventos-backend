@@ -1,23 +1,23 @@
 from fastapi import FastAPI
-from miseventos.infrastructure.persistence.postgresql.models import *
-from miseventos.infrastructure.persistence.postgresql.models.database import (
-    create_tables,
-)
-
-# from .infrastructure.api.routes import user_router
-from miseventos.infrastructure.api.routes.user_routes import user_router
-from miseventos.infrastructure.api.routes.event_routes import event_router
-from miseventos.infrastructure.api.routes.slot_routes import slot_router
-from miseventos.infrastructure.api.routes.session_routes import session_router
-from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from miseventos.infrastructure.api.routes.speaker_routes import speaker_router
+
+from miseventos.infrastructure.api.routes.event_routes import event_router
 from miseventos.infrastructure.api.routes.login import login_router
 from miseventos.infrastructure.api.routes.logout import logout_router
 from miseventos.infrastructure.api.routes.session_register_routes import (
     session_register_router,
 )
+from miseventos.infrastructure.api.routes.session_routes import session_router
+from miseventos.infrastructure.api.routes.slot_routes import slot_router
+from miseventos.infrastructure.api.routes.speaker_routes import speaker_router
+
+# from .infrastructure.api.routes import user_router
+from miseventos.infrastructure.api.routes.user_routes import user_router
 from miseventos.infrastructure.api.routes.verify_auth import auth_router
+from miseventos.infrastructure.persistence.postgresql.models import *
+from miseventos.infrastructure.persistence.postgresql.models.database import (
+    create_tables,
+)
 
 create_tables()
 

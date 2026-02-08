@@ -1,0 +1,20 @@
+# Dockerfile
+FROM python:3.12.8-slim
+
+RUN apt-get update && apt-get install -y curl gcc g++ libpq-dev
+RUN pip install poetry==1.7.1
+
+WORKDIR /app
+COPY . .
+
+RUN poetry config virtualenvs.create false && \
+    poetry install --only=main --no-interaction --no-ansi --no-root
+
+# Variables de sistema
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH="/app:/app/src"
+
+EXPOSE 8000
+
+CMD ["uvicorn", "src.miseventos.main:app", "--host", "0.0.0.0", "--port", "8000"]

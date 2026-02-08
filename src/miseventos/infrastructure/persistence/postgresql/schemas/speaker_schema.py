@@ -1,8 +1,8 @@
-from uuid import UUID
-from sqlmodel import SQLModel
 from datetime import datetime
-from typing import List
-from typing import Optional
+from typing import List, Optional
+from uuid import UUID
+
+from sqlmodel import SQLModel
 
 
 class SpeakerRequest(SQLModel):

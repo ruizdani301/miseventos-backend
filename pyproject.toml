@@ -6,6 +6,8 @@ authors = ["daniel <ruizdani301@gmail.com>"]
 readme = "README.md"
 
 
+
+
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = "^0.128.0"
@@ -23,6 +25,11 @@ pyjwt = "^2.11.0"
 [tool.poetry.group.dev.dependencies]
 alembic = "^1.12.1"
 pytest = "^7.4.0"
+isort = "^7.0.0"
+
+[tool.isort]
+profile = "black"
+
 
 [build-system]
 requires = ["poetry-core"]

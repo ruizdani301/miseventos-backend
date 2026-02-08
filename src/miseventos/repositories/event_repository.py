@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
-from miseventos.entitis.event import EventEntity
-from uuid import UUID
 from typing import List
+from uuid import UUID
+
+from miseventos.entitis.event import EventEntity
 from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import (
     EventSlotResponse,
     EventWithOutResponse,

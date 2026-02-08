@@ -1,35 +1,37 @@
-from miseventos.repositories.event_repository import EventRepository
+from typing import List
+from uuid import UUID
+
+from sqlalchemy import func, orm
+from sqlalchemy.orm import load_only
+
 from miseventos.entitis.event import EventEntity
-from sqlalchemy import orm, func
+from miseventos.infrastructure.persistence.postgresql.models.enum import RoleName
 from miseventos.infrastructure.persistence.postgresql.models.event_model import (
     Event as EventModel,
 )
 from miseventos.infrastructure.persistence.postgresql.models.event_registration_model import (
     EventRegistration,
 )
-from miseventos.infrastructure.persistence.postgresql.models.session_registration_model import (
-    SessionRegistration,
-)
-from sqlalchemy.orm import load_only
-from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import (
-    EventSlotResponse,
-    NewTimeRange,
-    EventWithOutResponse,
-    EventsCompletedResponse,
-)
 from miseventos.infrastructure.persistence.postgresql.models.session_model import (
     Session,
 )
-from miseventos.infrastructure.persistence.postgresql.models.time_model import TimeSlot
-from miseventos.infrastructure.persistence.postgresql.models.speaker_model import (
-    Speaker,
+from miseventos.infrastructure.persistence.postgresql.models.session_registration_model import (
+    SessionRegistration,
 )
-from miseventos.infrastructure.persistence.postgresql.models.enum import RoleName
 from miseventos.infrastructure.persistence.postgresql.models.session_speaker_model import (
     SessionSpeaker,
 )
-from uuid import UUID
-from typing import List
+from miseventos.infrastructure.persistence.postgresql.models.speaker_model import (
+    Speaker,
+)
+from miseventos.infrastructure.persistence.postgresql.models.time_model import TimeSlot
+from miseventos.infrastructure.persistence.postgresql.schemas.event_schema import (
+    EventsCompletedResponse,
+    EventSlotResponse,
+    EventWithOutResponse,
+    NewTimeRange,
+)
+from miseventos.repositories.event_repository import EventRepository
 
 
 class EventImplement(EventRepository):
@@ -431,6 +433,8 @@ class EventImplement(EventRepository):
                 .options(load_only(EventModel.id, EventModel.title))
                 .all()
             )
+            if not data:
+                return []
 
             return [
                 EventWithOutResponse(
@@ -440,4 +444,5 @@ class EventImplement(EventRepository):
                 for event in data
             ]
         except Exception as e:
-            return e
+            self.session.rollback()
+            return []
