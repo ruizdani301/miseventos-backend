@@ -11,7 +11,6 @@ from miseventos.infrastructure.api.routes.session_routes import session_router
 from miseventos.infrastructure.api.routes.slot_routes import slot_router
 from miseventos.infrastructure.api.routes.speaker_routes import speaker_router
 
-# from .infrastructure.api.routes import user_router
 from miseventos.infrastructure.api.routes.user_routes import user_router
 from miseventos.infrastructure.api.routes.verify_auth import auth_router
 from miseventos.infrastructure.persistence.postgresql.models import *
@@ -32,8 +31,8 @@ app.add_middleware(
         "http://127.0.0.1:5173",
     ],  # En desarrollo permite todos, en producción especifica dominios
     allow_credentials=True,
-    allow_methods=["*"],  # Permite todos los métodos (GET, POST, etc.)
-    allow_headers=["*"],  # Permite todos los headers
+    allow_methods=["*"],
+    allow_headers=["*"],
     expose_headers=["*"],
 )
 app.include_router(router=user_router, prefix="/api/v1")
